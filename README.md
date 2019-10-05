@@ -26,6 +26,9 @@ http://classic.wowcat.net/bbs/new/topic/1483-1
 ### ColoredInventoryItems 物品品质边框着色插件 v1.4
 http://classic.wowcat.net/bbs/new/topic/1635-1
 
+### dct 战斗指示器 classic 改
+http://classic.wowcat.net/bbs/new/topic/1761-1
+
 ### EZJunk 自动卖垃圾&显示物品售价二合一 v1.0.1
 http://classic.wowcat.net/bbs/new/topic/1534-1
 
@@ -34,9 +37,6 @@ http://classic.wowcat.net/bbs/new/topic/1472-1
 
 ### HideRaidManager 隐藏团队管理框 v1.0.1
 http://classic.wowcat.net/bbs/new/topic/1455-1
-
-### InFlight 飞行时间状态计时器 v1.13.003
-http://classic.wowcat.net/bbs/new/topic/1701-1
 
 ### Inventorian 老牌暴雪风背包整合插件(集成整理按钮) v1.13.2.4
 http://classic.wowcat.net/bbs/new/topic/1634-1
