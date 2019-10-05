@@ -95,7 +95,6 @@ http://classic.wowcat.net/bbs/new/topic/1821-1
 ```
 /console SET overrideArchive "0"
 /console SET profanityFiter "0"
-/console SET chatClassColorOverride "0"
 ```
 
 ### 设置血液效果等级 (常驻)  
