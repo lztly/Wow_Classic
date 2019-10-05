@@ -1,0 +1,7 @@
+## Interface: 11302
+## Title: ClassicMenus
+## Notes: Removes modern additions to dropdown menus.
+## Author: Klimp
+## Version: 1.0
+
+ClassicMenus.lua

@@ -1,0 +1,2171 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+  <Script file="SmartAuraWatch.lua" />
+
+  <Button name="SmartAuraWatchButtonTemplate" virtual="true">
+    <Size x="48" y="48" />
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentIcon" nonBlocking="true" parentKey="icon" />
+      </Layer>
+      <Layer level="OVERLAY">
+        <FontString name="$parent_fsTarget" inherits="GameFontHighlight" hidden="true" parentKey="target" justifyH="LEFT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativeTo="$parent">
+              <Offset>
+                <AbsDimension x="3" y="-2" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parent_fsCount" inherits="GameFontHighlight" hidden="true" parentKey="count" justifyH="RIGHT" justifyV="TOP">
+          <Anchors>
+            <Anchor point="TOPRIGHT" relativeTo="$parent">
+              <Offset>
+                <AbsDimension x="-2" y="-2" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="$parent_fsText" inherits="NumberFontNormal" hidden="true" parentKey="text" justifyH="CENTER" justifyV="BOTTOM">
+          <Anchors>
+            <Anchor point="BOTTOM" relativeTo="$parent">
+              <Offset>
+                <AbsDimension x="1" y="-1" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Cooldown name="$parentCooldown" inherits="CooldownFrameTemplate" hidden="true" parentKey="cd">
+        <Size x="10" y="10" />
+        <Anchors>
+          <Anchor point="CENTER">
+            <Offset>
+              <AbsDimension x="0" y="-1" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Cooldown>
+      <StatusBar name="$parent_sbBar" hidden="true" frameStrata="BACKGROUND" parentKey="bar">
+        <Size>
+          <AbsDimension x="104" y="30" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="1" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <Texture name="$parent_txSpark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD" parentKey="spark">
+              <Size>
+                <AbsDimension x="12" y="48" />
+              </Size>
+              <Anchors>
+                <Anchor point="CENTER" />
+              </Anchors>
+            </Texture>
+            <FontString name="$parent_fsTarget" inherits="GameFontHighlightOutline" hidden="true" parentKey="target" justifyH="CENTER" justifyV="MIDDLE">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="-1" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parent_fsCount" inherits="GameFontHighlightOutline" hidden="true" parentKey="count" justifyH="CENTER" justifyV="MIDDLE">
+              <Anchors>
+                <Anchor point="RIGHT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="-1" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parent_fsText" inherits="GameFontHighlightOutline" parentKey="text" justifyH="CENTER" justifyV="MIDDLE">
+              <Anchors>
+                <Anchor point="CENTER" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="-1" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar" />
+        <BarColor r="0" g="1.0" b="0" />
+      </StatusBar>
+    </Frames>
+  </Button>
+
+  <Frame name="SmartAuraWatchBarTemplate" virtual="true" movable="true" toplevel="false" frameStrata="MEDIUM" parent="UIParent" hidden="true" enableMouse="false">
+    <Size>
+      <AbsDimension x="56" y="56" />
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER" relativePoint="CENTER" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentBackdrop" nonBlocking="true" parentKey="backdrop" />
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnLoad>
+        --SmartAuraWatch_BarOnLoad(self);
+      </OnLoad>
+      <OnEvent>
+      </OnEvent>
+      <OnUpdate>
+        --SmartAuraWatch_BarOnUpdate(self, elapsed);
+      </OnUpdate>
+      <OnShow>
+      </OnShow>
+      <OnHide>
+        self:StopMovingOrSizing();
+      </OnHide>
+      <OnDragStart>
+        if (button == "LeftButton") then
+          self.IsMoving = true;
+          self:StartMoving();
+        end      
+      </OnDragStart>
+      <OnDragStop>
+        self.IsMoving = false;
+        self:StopMovingOrSizing();
+        SmartAuraWatch_UpdateBarPos(self);
+        SmartAuraWatch_UpdateActiveBar(self.BarId);
+      </OnDragStop>
+      <OnMouseDown>
+      </OnMouseDown>
+      <OnMouseUp>
+        if (button == "LeftButton") then
+          SmartAuraWatch_UpdateActiveBar(self.BarId);
+        end
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+
+  <Button name="SmartAuraWatchStatisticsButtonTemplate" virtual="true">
+    <Size x="120" y="16" />
+    <Frames>
+      <Button name="$parentBtnIcon" parentKey="icon">
+        <Size x="16" y="16" />
+        <Anchors>
+          <Anchor point="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="0" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+      </Button>
+      <StatusBar name="$parentBar" parentKey="bar">
+        <Size>
+          <AbsDimension x="104" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parentBtnIcon">
+            <Offset>
+              <AbsDimension x="0" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="OVERLAY">
+            <FontString name="$parentText" inherits="GameFontHighlightSmallOutline" parentKey="text">
+              <Anchors>
+                <Anchor point="LEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <BarTexture urgency="5" file="Interface\TargetingFrame\UI-StatusBar" />
+        <BarColor r="0" g="1.0" b="0" />
+      </StatusBar>
+    </Frames>
+  </Button>
+
+
+  <Frame name="SmartAuraWatch">
+    <Scripts>
+      <OnLoad>
+        SmartAuraWatch_OnLoad(self);
+      </OnLoad>
+      <OnUpdate>
+        SmartAuraWatch_OnUpdate(self, elapsed);
+      </OnUpdate>
+      <OnEvent>
+        SmartAuraWatch_OnEvent(self, event, ...);
+      </OnEvent>
+    </Scripts>
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchOptionsFrame" movable="true" toplevel="true" frameStrata="DIALOG" parent="UIParent" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="400" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="UIParent">
+        <Offset>
+          <AbsDimension x="0" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Frames>
+
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="26" y="26" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="1" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnGlobalLoad" inherits="UIPanelButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="16" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_btnClose">
+            <Offset>
+              <AbsDimension x="1" y="-4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormal");
+            self:SetHighlightFontObject("GameFontHighlight");
+            self:SetText("L");
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_GlobalLoad();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.GlobalLoad, SmartAuraWatchLoc.GlobalLoadTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnGlobalSave" inherits="UIPanelButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="16" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" relativeTo="$parent_btnGlobalLoad">
+            <Offset>
+              <AbsDimension x="-2" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormal");
+            self:SetHighlightFontObject("GameFontHighlight");
+            self:SetText("S");
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_GlobalSave();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.GlobalSave, SmartAuraWatchLoc.GlobalSaveTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Slider name="$parent_sldBars" inherits="OptionsSliderTemplate" hidden="false" parentKey="bars">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="6" y="-30" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 1, SmartAuraWatch_MaxBars, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateBarCount();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateBarCount(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Button name="$parent_btnShowOptionsGlobal" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="96" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativePoint="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="-2" y="-20" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.OptionsGlobalTitle);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ShowOptionsGlobal();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Show, SmartAuraWatchLoc.OptionsGlobalTitle, "ANCHOR_RIGHT");
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Slider name="$parent_sldActiveBar" inherits="OptionsSliderTemplate" hidden="false" parentKey="bar">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldBars">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 1, SmartAuraWatch_MaxBars, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateActiveBar();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateActiveBar(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldBarAlpha" inherits="OptionsSliderTemplate" hidden="false" parentKey="baralpha">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldActiveBar">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 1, 0.01);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateBarAlpha();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateBarAlpha(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <CheckButton name="$parent_cbTooltips" inherits="OptionsCheckButtonTemplate" parentKey="tooltips">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldBarAlpha">
+            <Offset>
+              <AbsDimension x="0" y="-6" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateTooltips();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateTooltips(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Tooltips, SmartAuraWatchLoc.TooltipsTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <ScrollFrame name="$parent_sfAuraList" inherits="FauxScrollFrameTemplate" parentKey="auralist">
+        <Size>
+          <AbsDimension x="136" y="228" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbTooltips">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTitle" inherits="GameFontHighlight" hidden="false" parentKey="title">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentInfo" inherits="GameFontHighlightSmall" hidden="false" parentKey="info">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.BtnHeight = 14;
+            self.title:SetText(SmartAuraWatchLoc.AuraTitle);
+            self.info:SetJustifyH("LEFT");
+            self.info:SetText("|cff00bb00"..SmartAuraWatchLoc.AuraHelp);
+          </OnLoad>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, self.BtnHeight, SmartAuraWatch_AuraListOnScroll);
+          </OnVerticalScroll>
+          <OnShow>
+            self:EnableMouse(true);
+            SmartAuraWatch_AuraListOnScroll(self);
+          </OnShow>
+          <OnMouseUp>
+            SmartAuraWatch_ClearActiveAura();
+          </OnMouseUp>
+        </Scripts>
+      </ScrollFrame>
+
+
+      <Button name="$parent_btnStat" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="34" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sfAuraList">
+            <Offset>
+              <AbsDimension x="0" y="-36" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Stat);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ShowStatList();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Show, SmartAuraWatchLoc.StatTitle);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnDefaultAuraList" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="64" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_btnStat">
+            <Offset>
+              <AbsDimension x="4" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Default);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_DefaultAuraList();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnClearAuraList" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="64" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_btnDefaultAuraList">
+            <Offset>
+              <AbsDimension x="1" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Clear);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ClearAuraList();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Slider name="$parent_sldIconSize" inherits="OptionsSliderTemplate" hidden="false" parentKey="iconsize">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_sldActiveBar">
+            <Offset>
+              <AbsDimension x="26" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 10, 100, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateIconSize();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateIconSize(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldOrientation" inherits="OptionsSliderTemplate" hidden="false" parentKey="orientation">
+        <Size>
+          <AbsDimension x="116" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldIconSize">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 3, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateOrientation();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateOrientation(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldGrowth" inherits="OptionsSliderTemplate" hidden="false" parentKey="growth">
+        <Size>
+          <AbsDimension x="92" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_sldOrientation">
+            <Offset>
+              <AbsDimension x="12" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 2, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateGrowth();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateGrowth(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <EditBox name="$parent_txtAura" autoFocus="false" inherits="InputBoxTemplate" font="GameFontNormal" parentKey="aura">
+        <Size>
+          <AbsDimension x="144" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldOrientation">
+            <Offset>
+              <AbsDimension x="20" y="-24" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnTabPressed>
+          </OnTabPressed>
+          <OnEnterPressed>
+            SmartAuraWatch_UpdateAura();
+          </OnEnterPressed>
+        </Scripts>
+      </EditBox>
+
+      <Button name="$parent_icoMini" autoFocus="false" parentKey="icon">
+        <Size>
+          <AbsDimension x="24" y="24" />
+        </Size>
+        <Anchors>
+          <Anchor point="RIGHT" relativePoint="LEFT" relativeTo="$parent_txtAura">
+            <Offset>
+              <AbsDimension x="-8" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:EnableKeyboard(false);
+            self:EnableMouseWheel(false);
+          </OnLoad>
+          <OnEnter>
+            SmartAuraWatch_AuraInfoTooltip(self);            
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnAdd" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="20" y="21" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_txtAura">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormal");
+            self:SetHighlightFontObject("GameFontHighlight");
+            self:SetText("+");
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_AddAura();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Add, nil, "ANCHOR_RIGHT");
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnShowAuraScanList" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="20" y="21" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_btnAdd">
+            <Offset>
+              <AbsDimension x="1" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormal");
+            self:SetHighlightFontObject("GameFontHighlight");
+            self:SetText("&gt;");
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ShowAuraScanList();
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Show, SmartAuraWatchLoc.AuraScanTitle, "ANCHOR_RIGHT");
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Button>
+
+      <Slider name="$parent_sldUnit" inherits="OptionsSliderTemplate" hidden="false" parentKey="unit">
+        <Size>
+          <AbsDimension x="116" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_txtAura">
+            <Offset>
+              <AbsDimension x="-22" y="-22" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 1, #SmartAuraWatch_UnitList, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateUnit();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateUnit(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldRelship" inherits="OptionsSliderTemplate" hidden="false" parentKey="relship">
+        <Size>
+          <AbsDimension x="92" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent_sldUnit">
+            <Offset>
+              <AbsDimension x="12" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 1, #SmartAuraWatch_RelationshipList, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateRelship();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateRelship(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldDurationMin" inherits="OptionsSliderTemplate" hidden="false" parentKey="durationmin">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldUnit">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, -1, 100, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateDurationMin();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateDurationMin(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldDurationMax" inherits="OptionsSliderTemplate" hidden="false" parentKey="durationmax">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldDurationMin">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 101, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateDurationMax();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateDurationMax(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldCountMin" inherits="OptionsSliderTemplate" hidden="false" parentKey="countmin">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldDurationMax">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, -1, 100, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateCountMin();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateCountMin(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldCountMax" inherits="OptionsSliderTemplate" hidden="false" parentKey="countmax">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldCountMin">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 101, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateCountMax();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateCountMax(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldFilter" inherits="OptionsSliderTemplate" hidden="false" parentKey="filter">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldCountMax">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 2, #SmartAuraWatch_FilterList, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateFilter();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateFilter(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldTalentGroup" inherits="OptionsSliderTemplate" hidden="false" parentKey="talentgroup">
+        <Size>
+          <AbsDimension x="220" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldFilter">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 0, 2, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateTalentGroup();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateTalentGroup(self:GetValue());
+          </OnValueChanged>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </Slider>
+
+      <CheckButton name="$parent_cbMyAura" inherits="OptionsCheckButtonTemplate" parentKey="myaura">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldTalentGroup">
+            <Offset>
+              <AbsDimension x="0" y="-8" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateMyAura();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateMyAura(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.MyAura, SmartAuraWatchLoc.MyAuraTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <CheckButton name="$parent_cbNotUp" inherits="OptionsCheckButtonTemplate" parentKey="notup">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_cbMyAura">
+            <Offset>
+              <AbsDimension x="124" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateNotUp();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateNotUp(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.NotUp, SmartAuraWatchLoc.NotUpTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <CheckButton name="$parent_cbCombatOnly" inherits="OptionsCheckButtonTemplate" parentKey="combatonly">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbMyAura">
+            <Offset>
+              <AbsDimension x="0" y="-1" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateCombatOnly();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateCombatOnly(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.OnlyInCombat, SmartAuraWatchLoc.OnlyInCombatTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <CheckButton name="$parent_cbShowCd" inherits="OptionsCheckButtonTemplate" parentKey="showcd">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent_cbCombatOnly">
+            <Offset>
+              <AbsDimension x="124" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateShowCd();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateShowCd(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.ShowCd, SmartAuraWatchLoc.ShowCdTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <CheckButton name="$parent_cbSound" inherits="OptionsCheckButtonTemplate" parentKey="sound">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbCombatOnly">
+            <Offset>
+              <AbsDimension x="0" y="-1" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText("");
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateSound();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateSound(v);
+          </OnClick>
+          <OnEnter>
+            --SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.Temp, SmartAuraWatchLoc.TempTT);
+          </OnEnter>
+          <OnLeave>
+            --GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        self:EnableMouse(true);
+        self:EnableMouseWheel(true);
+        SmartAuraWatch_OptionsFrameOnLoad(self);
+      </OnLoad>
+      <OnEvent>
+      </OnEvent>
+      <OnUpdate>
+      </OnUpdate>
+      <OnShow>
+        self:EnableMouse(true);
+        self:EnableMouseWheel(true);
+        SmartAuraWatch_OptionsFrameOnShow();
+      </OnShow>
+      <OnHide>
+        self:StopMovingOrSizing();
+        SmartAuraWatch_OptionsFrameOnHide();
+      </OnHide>
+      <OnDragStart>
+        if (button == "LeftButton") then
+          self:StartMoving();
+        end      
+      </OnDragStart>
+      <OnDragStop>
+        self:StopMovingOrSizing();
+      </OnDragStop>
+      <OnMouseDown>
+      </OnMouseDown>
+      <OnMouseUp>
+        SmartAuraWatch_ClearActiveAura();
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchSounds" toplevel="true" frameStrata="MEDIUM" parent="SmartAuraWatchOptionsFrame" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="172" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="SmartAuraWatchOptionsFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Frames>
+      <ScrollFrame name="$parent_ScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="soundlist">
+        <Size>
+          <AbsDimension x="140" y="410" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="4" y="-18" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTitle" inherits="GameFontHighlight" hidden="false" parentKey="title">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="2" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentInfo" inherits="GameFontHighlightSmall" hidden="false" parentKey="info">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.BtnHeight = 14;
+            self:SetHeight(self:GetParent():GetHeight()-44);
+            
+            self.title:SetText(SmartAuraWatchLoc.SoundsTitle);
+            self.info:SetJustifyH("LEFT");
+            self.info:SetText("|cff00bb00"..SmartAuraWatchLoc.SoundsHelp);            
+          </OnLoad>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, self.BtnHeight, SmartAuraWatch_SoundListOnScroll); 
+          </OnVerticalScroll>
+          <OnShow>
+            SmartAuraWatch_SoundListOnScroll(self);
+          </OnShow>
+        </Scripts>
+      </ScrollFrame>
+
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        SmartAuraWatch_SoundsOnLoad(self);
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+      </OnLoad>
+      <OnShow>
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+        SmartAuraWatch_HideAllButThis(self);
+      </OnShow>
+      <OnHide>
+      </OnHide>
+    </Scripts>
+
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchAuraScanList" toplevel="true" frameStrata="MEDIUM" parent="SmartAuraWatchOptionsFrame" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="172" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="SmartAuraWatchOptionsFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Frames>
+      <ScrollFrame name="$parent_ScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="list">
+        <Size>
+          <AbsDimension x="140" y="410" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="4" y="-18" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTitle" inherits="GameFontHighlight" hidden="false" parentKey="title">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="2" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentInfo" inherits="GameFontHighlightSmall" hidden="false" parentKey="info">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.BtnHeight = 14;
+            self:SetHeight(self:GetParent():GetHeight()-68);
+            
+            self.title:SetText(SmartAuraWatchLoc.AuraScanTitle);
+            self.info:SetJustifyH("LEFT");
+            self.info:SetText("|cff00bb00"..SmartAuraWatchLoc.AuraScanHelp);            
+          </OnLoad>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, self.BtnHeight, SmartAuraWatch_AuraScanListOnScroll); 
+          </OnVerticalScroll>
+          <OnShow>
+            self:EnableMouse(true);
+            SmartAuraWatch_AuraScanListOnScroll(self);
+          </OnShow>
+        </Scripts>
+      </ScrollFrame>
+
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnClear" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="64" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="-4" y="4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Clear);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ClearAuraScanList();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        SmartAuraWatch_AuraScanListOnLoad(self);
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+      </OnLoad>
+      <OnShow>
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+        SmartAuraWatch_HideAllButThis(self);
+      </OnShow>
+      <OnHide>
+      </OnHide>
+    </Scripts>
+
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchStatistics" toplevel="true" frameStrata="MEDIUM" parent="UIParent" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="260" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="SmartAuraWatchOptionsFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Frames>
+      <ScrollFrame name="$parent_ScrollFrame" inherits="FauxScrollFrameTemplate" parentKey="list">
+        <Size>
+          <AbsDimension x="140" y="410" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="4" y="-18" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Layers>
+          <Layer level="BACKGROUND">
+            <FontString name="$parentTitle" inherits="GameFontHighlight" hidden="false" parentKey="title">
+              <Anchors>
+                <Anchor point="BOTTOM" relativePoint="TOP" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="0" y="2" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+            <FontString name="$parentInfo" inherits="GameFontHighlightSmall" hidden="false" parentKey="info">
+              <Anchors>
+                <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+                  <Offset>
+                    <AbsDimension x="2" y="0" />
+                  </Offset>
+                </Anchor>
+              </Anchors>
+            </FontString>
+          </Layer>
+        </Layers>
+        <Scripts>
+          <OnLoad>
+            self.BtnHeight = 16;
+            self:SetHeight(self:GetParent():GetHeight()-56);
+            self:SetWidth(self:GetParent():GetWidth()-32);
+            
+            self.info:SetJustifyH("LEFT");
+            self.info:SetText("|cff00bb00"..SmartAuraWatchLoc.StatHelp);            
+          </OnLoad>
+          <OnVerticalScroll>
+            FauxScrollFrame_OnVerticalScroll(self, offset, self.BtnHeight, SmartAuraWatch_StatListOnScroll); 
+          </OnVerticalScroll>
+          <OnShow>
+            self:EnableMouse(true);
+            SmartAuraWatch_StatListOnScroll(self);
+          </OnShow>
+        </Scripts>
+      </ScrollFrame>
+
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+
+      <CheckButton name="$parent_cbAutoReset" inherits="OptionsCheckButtonTemplate" parentKey="autoreset">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="4" y="4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.AutoReset);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateAutoReset();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateAutoReset(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.AutoReset, SmartAuraWatchLoc.AutoResetTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <Button name="$parent_btnClear" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="64" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="-4" y="4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Clear);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ClearStatList();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+      <Button name="$parent_btnReport" hidden="false">
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeTo="$parent_btnClear">
+            <Offset>
+              <AbsDimension x="-4" y="0" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalTexture("Interface\\Icons\\inv_misc_note_03");
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ReportMenu();
+          </OnClick>
+        </Scripts>
+      </Button>
+
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        SmartAuraWatch_StatListOnLoad(self);
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+      </OnLoad>
+      <OnShow>
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+        SmartAuraWatch_HideAllButThis(self);
+      </OnShow>
+      <OnHide>
+      </OnHide>
+      <OnDragStart>
+        if (self:IsMovable() and button == "LeftButton") then
+          self.IsMoving = true;
+          self:StartMoving();
+        end
+      </OnDragStart>
+      <OnDragStop>
+        self.IsMoving = false;
+        self:StopMovingOrSizing();
+      </OnDragStop>
+    </Scripts>
+
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchOptionsGlobalFrame" toplevel="true" frameStrata="MEDIUM" parent="SmartAuraWatchOptionsFrame" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="172" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="SmartAuraWatchOptionsFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <FontString name="$parentTitle" inherits="GameFontHighlight" hidden="false" parentKey="title">
+          <Anchors>
+            <Anchor point="TOP" relativePoint="TOP" relativeTo="$parent">
+              <Offset>
+                <AbsDimension x="0" y="-4" />
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Frames>
+      <CheckButton name="$parent_cbAuraScan" inherits="OptionsCheckButtonTemplate" parentKey="aurascan">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="8" y="-20" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.AuraScanTitle);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateAuraScan();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateAuraScan(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.AuraScanTitle, SmartAuraWatchLoc.AuraScanTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+
+      <CheckButton name="$parent_cbColoredTL" inherits="OptionsCheckButtonTemplate" parentKey="coloredtl">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbAuraScan">
+            <Offset>
+              <AbsDimension x="0" y="-2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.ColoredTL);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateColoredTL();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateColoredTL(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.ColoredTL, SmartAuraWatchLoc.ColoredTLTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+      
+      <CheckButton name="$parent_cbSecTL" inherits="OptionsCheckButtonTemplate" parentKey="sectl">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbColoredTL">
+            <Offset>
+              <AbsDimension x="0" y="-2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.SecTL);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateSecTL();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateSecTL(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.SecTL, SmartAuraWatchLoc.SecTLTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>      
+      
+      <CheckButton name="$parent_cbShowIconBorder" inherits="OptionsCheckButtonTemplate" parentKey="showiconborder">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbSecTL">
+            <Offset>
+              <AbsDimension x="0" y="-2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.ShowIconBorder);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateShowIconBorder();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateShowIconBorder(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.ShowIconBorder, SmartAuraWatchLoc.ShowIconBorderTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+      
+      <CheckButton name="$parent_cbShowSpark" inherits="OptionsCheckButtonTemplate" parentKey="showspark">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbShowIconBorder">
+            <Offset>
+              <AbsDimension x="0" y="-2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.ShowSpark);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateShowSpark();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateShowSpark(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.ShowSpark, SmartAuraWatchLoc.ShowSparkTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>
+      
+      <CheckButton name="$parent_cbTimerStyle" inherits="OptionsCheckButtonTemplate" parentKey="timerstyle">
+        <HitRectInsets>
+          <AbsInset left="0" right="0" top="0" bottom="0" />
+        </HitRectInsets>
+        <Size>
+          <AbsDimension x="18" y="18" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbShowSpark">
+            <Offset>
+              <AbsDimension x="0" y="-2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            _G[self:GetName().."Text"]:SetText(SmartAuraWatchLoc.TimerStyle);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateTimerStyle();
+          </OnShow>
+          <OnClick>
+            local v = self:GetChecked() or false;
+            SmartAuraWatch_UpdateTimerStyle(v);
+          </OnClick>
+          <OnEnter>
+            SmartAuraWatch_Tooltip(self, SmartAuraWatchLoc.TimerStyle, SmartAuraWatchLoc.TimerStyleTT);
+          </OnEnter>
+          <OnLeave>
+            GameTooltip:Hide();
+          </OnLeave>
+        </Scripts>
+      </CheckButton>      
+      
+      <Slider name="$parent_sldBarStyle" inherits="OptionsSliderTemplate" hidden="false" parentKey="barstyle">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_cbTimerStyle">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, 1, SmartAuraWatch_MaxBarStyles, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateBarStyle();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateBarStyle(self:GetValue());
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+      
+      <Slider name="$parent_sldFontSizeOffset" inherits="OptionsSliderTemplate" hidden="false" parentKey="fontsizeoffset">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldBarStyle">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, -20, 20, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateFontSizeOffset();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateFontSizeOffset(self:GetValue());
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+
+      <Slider name="$parent_sldSpacingOffset" inherits="OptionsSliderTemplate" hidden="false" parentKey="spacingoffset">
+        <Size>
+          <AbsDimension x="172" y="16" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parent_sldFontSizeOffset">
+            <Offset>
+              <AbsDimension x="0" y="-16" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetScale(SmartAuraWatch_SldScale);
+            SmartAuraWatch_SliderOnLoad(self, -10, 20, 1);
+          </OnLoad>
+          <OnShow>
+            SmartAuraWatch_UpdateSpacingOffset();
+          </OnShow>
+          <OnValueChanged>
+            SmartAuraWatch_UpdateSpacingOffset(self:GetValue());
+          </OnValueChanged>
+        </Scripts>
+      </Slider>
+
+      <Button name="$parent_btnDefault" inherits="OptionsButtonTemplate" hidden="false">
+        <Size>
+          <AbsDimension x="64" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="-4" y="4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+            self:SetNormalFontObject("GameFontNormalSmall");
+            self:SetHighlightFontObject("GameFontHighlightSmall");
+            self:SetText(SmartAuraWatchLoc.Default);
+          </OnLoad>
+          <OnClick>
+            SmartAuraWatch_ResetOptionsGlobal();
+          </OnClick>
+        </Scripts>
+      </Button>
+      
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        SmartAuraWatch_OptionsGlobalOnLoad(self);
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+        self.title:SetText(SmartAuraWatchLoc.OptionsGlobalTitle);
+      </OnLoad>
+      <OnShow>
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+        SmartAuraWatch_HideAllButThis(self);
+      </OnShow>
+      <OnHide>
+      </OnHide>
+    </Scripts>
+  </Frame>
+
+
+  <Frame name="SmartAuraWatchWNF" movable="true" toplevel="true" frameStrata="MEDIUM" parent="SmartAuraWatchOptionsFrame" hidden="true" enableMouse="true">
+    <Size>
+      <AbsDimension x="200" y="428" />
+    </Size>
+    <Anchors>
+      <Anchor point="TOPLEFT" relativeTo="SmartAuraWatchOptionsFrame" relativePoint="TOPRIGHT">
+        <Offset>
+          <AbsDimension x="1" y="0" />
+        </Offset>
+      </Anchor>
+    </Anchors>
+
+    <!-- Interface\DialogFrame\UI-DialogBox-Background -->
+    <Backdrop name="$parent_Backdrop" bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="2" right="2" top="2" bottom="2" />
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="8" />
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="8" />
+      </EdgeSize>
+    </Backdrop>
+
+    <Frames>
+      <!-- GameFontHighlightSmall, GameFontNormalSmall -->
+      <EditBox name="$parent_lblText" letters="2000" multiLine="true" autoFocus="false" parentKey="text">
+        <Size>
+          <AbsDimension x="184" y="176" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="8" y="-4" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <FontString inherits="GameFontNormalSmall" justifyH="LEFT" />
+        <Scripts>
+          <OnLoad>
+            self:SetAutoFocus(false);
+            self:SetText("");
+            self:EnableMouse(false);
+            self:EnableKeyboard(false);
+            self:SetHeight(SmartAuraWatchWNF:GetHeight()-4);            
+          </OnLoad>
+        </Scripts>
+      </EditBox>
+
+      <Button name="$parent_btnClose" inherits="UIPanelCloseButton">
+        <Size>
+          <AbsDimension x="20" y="20" />
+        </Size>
+        <Anchors>
+          <Anchor point="TOPRIGHT" relativeTo="$parent">
+            <Offset>
+              <AbsDimension x="2" y="2" />
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <Scripts>
+          <OnLoad>
+          </OnLoad>
+        </Scripts>
+      </Button>
+    </Frames>
+    <Scripts>
+      <OnLoad>
+        self:SetHeight(SmartAuraWatchOptionsFrame:GetHeight());
+      </OnLoad>
+      <OnShow>
+        self:SetPoint("TOPLEFT", "SmartAuraWatchOptionsFrame", "TOPRIGHT", 2, 0);
+      </OnShow>
+      <OnHide>
+        self:StopMovingOrSizing();
+      </OnHide>
+      <OnDragStart>
+      </OnDragStart>
+      <OnDragStop>
+      </OnDragStop>
+      <OnMouseDown>
+      </OnMouseDown>
+      <OnMouseUp>
+      </OnMouseUp>
+    </Scripts>
+  </Frame>
+
+</Ui>

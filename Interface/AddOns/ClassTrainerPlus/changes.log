@@ -1,0 +1,13 @@
+* 0.6-beta
+    - Fix overlap when a player's profession window is open
+
+* 0.5-beta
+    - Added French localization (Thanks to yannlugrin on GitHub!)
+
+* 0.4-beta
+    - Close window when walking away from trainer
+
+* 0.2-beta
+    - Should not try to scan for tooltip names of profession trainers
+    - Added "Train All" button when Shift is held
+    - Added search box

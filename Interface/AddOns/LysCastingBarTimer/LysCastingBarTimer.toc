@@ -1,0 +1,5 @@
+## Interface: 11302
+## Title: Lysidia's Casting Bar Timer
+## Version: Classic-0.2
+## Notes: Displays the time left in the spellcast on the casting bar when Casting or Channeling.
+LysCastingBarTimer.lua

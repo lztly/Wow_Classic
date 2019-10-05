@@ -1,0 +1,25 @@
+﻿## Interface: 11302
+## Title: Smart|cffffffffAuraWatch|r by |cff00ff00Aeldra|r
+## Version: 1.13.2a
+## Author: |cff20d2ffAeldra|r (EU-Proudmoore)
+## Notes: Watches auras and notifies you.
+## Notes-deDE: Überwacht Auren und benachrichtigt dich.
+## eMail: aeldra@sonnenkinder.org
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: SmartAuraWatch_OptionsGlobal
+## SavedVariablesPerCharacter: SmartAuraWatch_Options
+
+lib\LibStub\LibStub.lua
+lib\CallbackHandler-1.0\CallbackHandler-1.0.lua
+lib\LibClassicDurations\LibClassicDurations.xml
+
+localization.lua
+localization.de.lua
+localization.fr.lua
+localization.es.lua
+localization.ru.lua
+localization.ko.lua
+localization.zh.lua
+localization.cn.lua
+SmartAuraWatch.xml

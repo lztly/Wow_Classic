@@ -1,0 +1,16 @@
+== Colored Inventory Items for wow Classic ==
+
+This addon will add colored border items for :
+- character pane
+- inspect pane
+- bags
+- bank
+- merchant frame
+
+In bags and bank, items with green quality and more will have a colored border according their quality.
+Quest items are also colorized with a yellow border.
+
+Type /cii for configuration. You will be able to disable border display for specific frame group 
+in case you got addon taht already manage this feature (like bagnon for bags).
+
+For more information https://gitlab.com/sigz/ColoredInventoryItems

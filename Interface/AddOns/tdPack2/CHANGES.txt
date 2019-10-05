@@ -1,0 +1,10 @@
+tag 54d2e666ad9b90c892494491371314a529955cd5 0.0.4
+Author:	Dencer <tdaddon@163.com>
+Date:	Fri Sep 6 02:25:33 2019 +0800
+
+commit 8593efd4e57d81bc466e4440ddb9d1c5abd936ad
+Author: unknown <S1596@wowshga.internal>
+Date:   Tue Sep 3 20:12:47 2019 +0800
+
+    feat: 支持背包Inventorian
+

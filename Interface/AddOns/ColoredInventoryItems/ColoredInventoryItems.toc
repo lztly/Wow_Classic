@@ -1,0 +1,8 @@
+## Interface: 11302
+## Title: ColoredInventoryItems
+## Version: 1.3
+## Author: Cpt Cavern
+## Notes: Color inventory items with rarity color for Wow Classic
+## SavedVariables: config
+
+ColoredInventoryItems.lua
