@@ -1,14 +1,16 @@
 local addonName = 'ColoredInventoryItems';
-local version = '1.3';
+local version = '1.4';
 local addon = CreateFrame('Button', addonName);
 
 local defaultSlotWidth, defaultSlotHeight = 68, 68;
 
 -- here we add on new color for quest items in the quality color ref array
 LE_ITEM_QUALITY_QUEST = #BAG_ITEM_QUALITY_COLORS + 1;
+LE_ITEM_QUALITY_POOR = 0;
+BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_POOR] = {r=.1, g=.1, b=.1}
 BAG_ITEM_QUALITY_COLORS[LE_ITEM_QUALITY_QUEST] = {r=1, g=1, b=0}
 
-config = {
+ciiDefaultConfig = {
     ['bags'] = 1,
     ['bank'] = 1,
     ['char'] = 1,
@@ -17,6 +19,7 @@ config = {
     ['intensity'] = 0.49,
 }
 
+addon:RegisterEvent('VARIABLES_LOADED');
 addon:RegisterEvent('ADDON_LOADED');
 addon:RegisterEvent('PLAYER_ENTERING_WORLD');
 addon:RegisterEvent('INSPECT_READY');
@@ -26,18 +29,43 @@ addon:RegisterEvent('PLAYERBANKSLOTS_CHANGED');
 
 addon:SetScript('OnEvent', function(self, event, arg1) self[event](self, arg1) end);
 
+function addon:VARIABLES_LOADED()
+    if (not ciiConfig) then
+        ciiConfig = {}
+    end
+
+    -- copy defaults to conf if key not exists
+    for k, v in pairs(ciiDefaultConfig) do
+        if (not ciiConfig[k]) then
+            ciiConfig[k] = ciiDefaultConfig[k];
+        end
+    end
+
+    -- remove keys not in defaults anymore
+    for k, v in pairs(ciiConfig) do
+        if (not ciiDefaultConfig[k]) then
+            ciiConfig[k] = nil;
+        end
+    end
+end
+
 function addon:ADDON_LOADED(arg1)
     if (arg1 == addonName) then
         print('|cFFFFFF00ColoredInventoryItem v' .. version .. ':|cFFFFFFFF Type /cii for configuration');
+
+        hooksecurefunc('ToggleCharacter', function() addon:characterFrame_OnToggle() end);
+        hooksecurefunc('ToggleBackpack', function() addon:backpack_OnShow() end);
+        hooksecurefunc('ToggleBag', function(id) addon:bag_OnToggle(id) end);
+        hooksecurefunc('MerchantFrame_UpdateMerchantInfo', function() addon:merchant_OnUpdate() end);
+        hooksecurefunc('MerchantFrame_UpdateBuybackInfo', function() addon:buyback_OnUpdate() end);
+    end
+
+	if(arg1 == 'Blizzard_TradeSkillUI') then
+        hooksecurefunc('TradeSkillFrame_SetSelection', function(id) addon:tradeskill_OnUpdate(id) end);
     end
 end
 
 function addon:PLAYER_ENTERING_WORLD()
-    hooksecurefunc('ToggleCharacter', function() addon:characterFrame_OnToggle() end);
-    hooksecurefunc('ToggleBackpack', function() addon:backpack_OnShow() end);
-    hooksecurefunc('ToggleBag', function(id) addon:bag_OnToggle(id) end);
-    hooksecurefunc('MerchantFrame_UpdateMerchantInfo', function() addon:merchant_OnUpdate() end);
-    hooksecurefunc('MerchantFrame_UpdateBuybackInfo', function() addon:buyback_OnUpdate() end);
 end
 
 ---
@@ -52,7 +80,7 @@ end
 
 function addon:characterFrame_OnShow()
     addon:RegisterEvent("UNIT_INVENTORY_CHANGED");
-    addon:charFrame_UpdateBorders('player', 'Character', config.char);
+    addon:charFrame_UpdateBorders('player', 'Character', ciiConfig.char);
 end
 
 function addon:characterFrame_OnHide()
@@ -62,7 +90,7 @@ end
 ---
 -- update player inventory
 function addon:UNIT_INVENTORY_CHANGED()
-    addon:charFrame_UpdateBorders('player', 'Character', config.char);
+    addon:charFrame_UpdateBorders('player', 'Character', ciiConfig.char);
 end
 
 ---
@@ -74,7 +102,7 @@ end
 ---
 -- inspect frame event
 function addon:INSPECT_READY()
-    addon:charFrame_UpdateBorders('target', 'Inspect', config.inspect);
+    addon:charFrame_UpdateBorders('target', 'Inspect',  ciiConfig.inspect);
 end
 
 ---
@@ -123,7 +151,7 @@ function addon:refreshBag(bagId)
         for slot = 1, nbSlots do
             slotFrameId = nbSlots + 1 - slot;
             local slotFrameName = 'ContainerFrame' .. frameId .. 'Item' .. slotFrameId;
-            addon:updateContainerSlot(bagId, slot, slotFrameName, config.bags);
+            addon:updateContainerSlot(bagId, slot, slotFrameName, ciiConfig.bags);
         end
     end
 end
@@ -134,7 +162,7 @@ function addon:bankbags_UpdateBorders()
     local container = BANK_CONTAINER;
 
     for slot = 1, GetContainerNumSlots(container) do
-        addon:updateContainerSlot(container, slot, 'BankFrameItem' .. slot, config.bank);
+        addon:updateContainerSlot(container, slot, 'BankFrameItem' .. slot, ciiConfig.bank);
     end
 end
 
@@ -155,10 +183,10 @@ function addon:updateContainerSlot(containerId, slotId, slotFrameName, show)
         local quality = GetItemQuality(itemId);
 
         -- green or better item, or quest item
-        if (quality > 1) then 
+        if (quality and quality > LE_ITEM_QUALITY_COMMON) then 
             local r, g, b = GetQualityColor(quality);
             item.qborder:SetVertexColor(r, g, b);
-            item.qborder:SetAlpha(config.intensity);
+            item.qborder:SetAlpha( ciiConfig.intensity);
             item.qborder:Show();
         else
             item.qborder:Hide();
@@ -222,18 +250,13 @@ function addon:charFrame_UpdateBorders(unit, frameType, show)
             if (quality and show == 1) then
                 local r, g, b = GetQualityColor(quality)
                 slot.qborder:SetVertexColor(r, g, b);
-                slot.qborder:SetAlpha(config.intensity);
+                slot.qborder:SetAlpha(ciiConfig.intensity);
                 slot.qborder:Show();
             else
                 slot.qborder:Hide();
             end
         end
     end
-end
-
----
--- merchant trade window show
-function addon:MERCHANT_SHOW()
 end
 
 ---
@@ -303,13 +326,13 @@ function addon:updateSlotBorderColor(item, itemId, minQuality)
     local minQuality = minQuality or LE_ITEM_QUALITY_POOR;
     local itemQuality = GetItemQuality(itemId);
 
-    if (itemQuality > minQuality) then
+    if (itemQuality and itemQuality > minQuality) then
         local r, g, b = GetQualityColor(itemQuality);
         item.qborder:SetVertexColor(r, g, b);
-        item.qborder:SetAlpha(config.intensity);
+        item.qborder:SetAlpha(ciiConfig.intensity);
         item.qborder:Show();
     else
-       item.qborder:Hide();
+        item.qborder:Hide();
     end
 end
 
@@ -328,16 +351,63 @@ function FindLastBuybackItem()
 end
 
 ---
+-- tradeskill item and reageants borders
+function addon:tradeskill_OnUpdate(id)
+    addon:updateTradeSkillItem(id);
+    addon:updateTradeSkillReageant(id);
+end
+
+function addon:updateTradeSkillItem(id)
+    local slotName = 'TradeSkillSkillIcon';
+    item = _G[slotName];
+
+    if (not item.qborder) then
+        item.qborder = addon:createBorder(slotName, item, defaultSlotWidth, defaultSlotHeight);
+    end
+
+    local link = GetTradeSkillItemLink(id);
+
+    if (link) then
+        addon:updateSlotBorderColor(item, link, LE_ITEM_QUALITY_COMMON);
+    else
+        item.qborder:Hide();
+    end
+end
+
+function addon:updateTradeSkillReageant(id)
+    local nb = GetTradeSkillNumReagents(id);
+    for index = 1, nb do
+        local slotName = 'TradeSkillReagent' .. index;
+        item = _G[slotName];
+        
+        if (not item.qborder) then
+            item.qborder = addon:createBorder(slotName, item, defaultSlotWidth, defaultSlotHeight, -54);
+        end
+
+        local link = GetTradeSkillReagentItemLink(id, index)
+
+        if (link) then
+            addon:updateSlotBorderColor(item, link, LE_ITEM_QUALITY_COMMON);
+        else
+            item.qborder:Hide();
+        end
+    end
+end
+
+---
 -- create a border texture for an inventory slot
-function addon:createBorder(name, parent, width, height)
+function addon:createBorder(name, parent, width, height, x, y)
+    local x = x or 0;
+    local y = y or 1;
+
     local border = parent:CreateTexture(name .. 'Quality', 'OVERLAY');
 
     border:SetTexture("Interface\\Buttons\\UI-ActionButton-Border");
-    border:SetBlendMode("ADD");
-    border:SetAlpha(config.intensity);
+    border:SetBlendMode('ADD');
+    border:SetAlpha( ciiConfig.intensity);
     border:SetHeight(height);
     border:SetWidth(width);
-    border:SetPoint("CENTER", parent, "CENTER", 0, 1);
+    border:SetPoint('CENTER', parent, 'CENTER', x, y);
     border:Hide();
 
     return border;
@@ -359,8 +429,8 @@ function GetItemQuality(itemId)
 end
 
 --- Slash commands
-SLASH_COLOREDINVENTORYITEMS1 = "/cii"
-SlashCmdList["COLOREDINVENTORYITEMS"] = function(msg)
+SLASH_CII1 = "/cii"
+SlashCmdList["CII"] = function(msg)
     msg = string.lower(msg);
 
     local _, _, cmd, args = string.find(msg, '%s?(%w+)%s?(.*)')
@@ -368,29 +438,29 @@ SlashCmdList["COLOREDINVENTORYITEMS"] = function(msg)
     if (cmd == 'help' or not cmd) then
         addon:printHelp();
     elseif (cmd == 'bags') then
-        if (config.bags == 1) then config.bags = 0 else config.bags = 1 end
-        addon:printStatus('Bags', config.bags);
+        if (ciiConfig.bags == 1) then ciiConfig.bags = 0 else ciiConfig.bags = 1 end
+        addon:printStatus('Bags', ciiConfig.bags);
     elseif (cmd == 'bank') then
-        if (config.bank == 1) then config.bank = 0 else config.bank = 1 end
-        addon:printStatus('Bank', config.bank);
+        if (ciiConfig.bank == 1) then ciiConfig.bank = 0 else ciiConfig.bank = 1 end
+        addon:printStatus('Bank', ciiConfig.bank);
     elseif (cmd == 'char') then
-        if (config.char == 1) then config.char = 0 else config.char = 1 end
-        addon:printStatus('Character', config.char);
+        if (ciiConfig.char == 1) then ciiConfig.char = 0 else ciiConfig.char = 1 end
+        addon:printStatus('Character', ciiConfig.char);
     elseif (cmd == 'inspect') then
-        if (config.inspect == 1) then config.inspect = 0 else config.inspect = 1 end
-        addon:printStatus('Inspect', config.inspect);
+        if (ciiConfig.inspect == 1) then ciiConfig.inspect = 0 else ciiConfig.inspect = 1 end
+        addon:printStatus('Inspect', ciiConfig.inspect);
     elseif (cmd == 'merchant') then
-        if (config.merchant == 1) then config.merchant = 0 else config.merchant = 1 end
-        addon:printStatus('Merchant', config.merchant);
+        if (ciiConfig.merchant == 1) then ciiConfig.merchant = 0 else ciiConfig.merchant = 1 end
+        addon:printStatus('Merchant', ciiConfig.merchant);
     elseif (cmd == 'intensity' or cmd == 'int') then
         if (not args or args == '') then
-            print('Current intensity : ' .. config.intensity)
+            print('Current intensity : ' .. ciiConfig.intensity)
         else
             local value = tonumber(args);
             if (value ~= nil) then
                 if (value > 1) then value = 1 end
                 if (value < .1) then value = .1 end
-                config.intensity = value;
+                ciiConfig.intensity = value;
             else
                 print('Value is not a number');
             end
@@ -410,12 +480,12 @@ end
 function addon:printHelp()
     print('===== ColorInventoryItems v' .. version .. ' usage:');
     print('/cii help    : this help message');
-    print('/cii bags    : toggle item border display in bags. (current = '.. config.bags ..')');
-    print('/cii bank    : toggle item border display in bank. (current = '.. config.bank ..')');
-    print('/cii char    : toggle item border display in character frame. (current = '.. config.char ..')');
-    print('/cii inspect : toggle item border display in inspect frame. (current = '.. config.inspect ..')');
-    print('/cii merchant : toggle item border display in merchant frame. (current = '.. config.merchant ..')');
+    print('/cii bags    : toggle item border display in bags. (current = '.. ciiConfig.bags ..')');
+    print('/cii bank    : toggle item border display in bank. (current = '.. ciiConfig.bank ..')');
+    print('/cii char    : toggle item border display in character frame. (current = '.. ciiConfig.char ..')');
+    print('/cii inspect : toggle item border display in inspect frame. (current = '.. ciiConfig.inspect ..')');
+    print('/cii merchant : toggle item border display in merchant frame. (current = '.. ciiConfig.merchant ..')');
     print('/cii intensity VALUE or /cii int VALUE :');
     print('        Define border intensity (float VALUE between 0 and 1).')
-    print('        default = 0.49, current = ' .. config.intensity);
+    print('        default = 0.49, current = ' ..  ciiConfig.intensity);
 end

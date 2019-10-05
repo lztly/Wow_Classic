@@ -6,7 +6,7 @@
 ## Notes-zhCN: |cff00ff00ClassicCodex|r
 ## Notes-zhTW: |cff00ff00ClassicCodex|r
 ## Author: Pgarneau, Shagu
-## Version: 1.2.1
+## Version: 1.2.2-ALA1005-L0
 ## SavedVariablesPerCharacter: CodexConfig, CodexHiddenQuests, CodexBrowserFavorites, CodexColors
 
 # database index
@@ -48,6 +48,9 @@ lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
 lib\HereBeDragons\HereBeDragons-2.0.lua
 lib\HereBeDragons\HereBeDragons-Pins-2.0.lua
 
+
+
+UI_LOCALE.lua
 # main
 command.lua
 config.lua
@@ -58,4 +61,3 @@ quest.lua
 ui.lua
 browser.lua
 
-## Q-CAT-Version: 211

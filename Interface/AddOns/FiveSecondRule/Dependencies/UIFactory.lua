@@ -18,7 +18,7 @@ end
 
 function UIFactory:MakeText(parent, text, size)
     local text_obj = parent:CreateFontString(nil, "ARTWORK")
-    text_obj:SetFont("Fonts/FRIZQT__.ttf", size)
+    text_obj:SetFont("Fonts/ARHei.ttf", size)
     text_obj:SetJustifyV("CENTER")
     text_obj:SetJustifyH("CENTER")
     text_obj:SetText(text)

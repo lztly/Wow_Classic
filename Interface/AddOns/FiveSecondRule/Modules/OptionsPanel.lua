@@ -32,6 +32,8 @@ OptionsPanelFrame:SetScript("OnEvent",
 
 function OptionsPanelFrame:UpdateOptionValues()
     frame.content.ticks:SetChecked(FiveSecondRule_Options.showTicks == true)
+    frame.content.flat:SetChecked(FiveSecondRule_Options.flat == true)
+    frame.content.showText:SetChecked(FiveSecondRule_Options.showText == true)
     
     frame.content.barWidth:SetText(tostring(FiveSecondRule_Options.barWidth))
     frame.content.barHeight:SetText(tostring(FiveSecondRule_Options.barHeight))
@@ -72,7 +74,7 @@ function OptionsPanelFrame:CreateGUI(name, parent)
     -- WHETHER OR NOT TO SHOW THE MANA TICKS BAR
     if (not frame.content.ticks) then
         local ticks = UIFactory:MakeCheckbox(ADDON_NAME.."Ticks", frame.content, "Check to show when the next mana regen tick will fulfil.")
-        ticks.label:SetText("Show Mana Ticks")
+        ticks.label:SetText("显示法力刻度")
         ticks:SetPoint("TOPLEFT", 10, -30)
         ticks:SetScript("OnClick",function(self,button)
             FiveSecondRule_Options.showTicks = self:GetChecked()
@@ -80,8 +82,32 @@ function OptionsPanelFrame:CreateGUI(name, parent)
         frame.content.ticks = ticks
     end 
 
+    -- FLAT DESIGN
+    if (not frame.content.flat) then
+        local flat = UIFactory:MakeCheckbox(ADDON_NAME.."flat", frame.content, "Check to make the bar to use a flat color.")
+        flat.label:SetText("扁平风格")
+        flat:SetPoint("TOPLEFT", 10, -60)
+        flat:SetScript("OnClick",function(self,button)
+            FiveSecondRule_Options.flat = self:GetChecked()
+            FiveSecondRule:Update()
+        end)
+        frame.content.flat = flat        
+    end     
+
+    -- SHOW TEXT?
+    if (not frame.content.showText) then
+        local showText = UIFactory:MakeCheckbox(ADDON_NAME.."showText", frame.content, "Check to show text on the bar (seconds left)")
+        showText.label:SetText("显示文字")
+        showText:SetPoint("TOPLEFT", 10, -90)
+        showText:SetScript("OnClick",function(self,button)
+            FiveSecondRule_Options.showText = self:GetChecked()
+            FiveSecondRule:Update()
+        end)
+        frame.content.showText = showText        
+    end     
+
     -- BAR
-    local barWidth = UIFactory:MakeEditBox(ADDON_NAME.."CountdownWidth", frame.content, "Width", 75, 25, function(self)
+    local barWidth = UIFactory:MakeEditBox(ADDON_NAME.."CountdownWidth", frame.content, "宽度", 75, 25, function(self)
         FiveSecondRule_Options.barWidth = tonumber(self:GetText())
         FiveSecondRule:Update()
     end)
@@ -89,7 +115,7 @@ function OptionsPanelFrame:CreateGUI(name, parent)
     barWidth:SetCursorPosition(0)
     frame.content.barWidth = barWidth
 
-    local barHeight = UIFactory:MakeEditBox(ADDON_NAME.."CountdownHeight", frame.content, "Height", 75, 25, function(self)
+    local barHeight = UIFactory:MakeEditBox(ADDON_NAME.."CountdownHeight", frame.content, "高度", 75, 25, function(self)
         FiveSecondRule_Options.barHeight = tonumber(self:GetText())
         FiveSecondRule:Update()
     end)
@@ -101,22 +127,22 @@ function OptionsPanelFrame:CreateGUI(name, parent)
     local function lockToggled(self)
         if (FiveSecondRule_Options.unlocked) then 
             FiveSecondRule:lock() 
-            self:SetText("Unlock")
+            self:SetText("解锁")
         else 
             FiveSecondRule:unlock() 
-            self:SetText("Lock")
+            self:SetText("锁定")
         end 
     end
 
-    local toggleLockText = (FiveSecondRule_Options.unlocked and "Lock" or "Unlock")
+    local toggleLockText = (FiveSecondRule_Options.unlocked and "锁定" or "解锁")
     local toggleLock = UIFactory:MakeButton(ADDON_NAME.."LockButton", frame.content, 60, 20, toggleLockText, 14, UIFactory:MakeColor(1,1,1,1), function(self)
         lockToggled(self)
     end)
-    toggleLock:SetPoint("TOPLEFT", 10, -120)
+    toggleLock:SetPoint("TOPLEFT", 10, -150)
     frame.content.toggleLock = toggleLock
 
     -- RESET BUTTON
-    local resetButton = UIFactory:MakeButton(ADDON_NAME.."ResetButton", frame.content, 60, 20, "Reset", 14, UIFactory:MakeColor(1,1,1,1), function(self) 
+    local resetButton = UIFactory:MakeButton(ADDON_NAME.."ResetButton", frame.content, 60, 20, "重置", 14, UIFactory:MakeColor(1,1,1,1), function(self) 
         if (FiveSecondRule_Options.unlocked) then
             lockToggled(toggleLock)
         end
@@ -124,11 +150,11 @@ function OptionsPanelFrame:CreateGUI(name, parent)
         FiveSecondRule:reset()
         OptionsPanelFrame:UpdateOptionValues(frame.content)
     end)
-    resetButton:SetPoint("TOPRIGHT", -30, -120)
+    resetButton:SetPoint("TOPRIGHT", -15, -150)
     frame.content.resetButton = resetButton
 
     -- BAR LEFT
-    local barLeft = UIFactory:MakeEditBox(ADDON_NAME.."BarLeft", frame.content, "X (from left)", 75, 25, function(self)
+    local barLeft = UIFactory:MakeEditBox(ADDON_NAME.."BarLeft", frame.content, "X (从左)", 75, 25, function(self)
         FiveSecondRule_Options.barLeft = tonumber(self:GetText())
         FiveSecondRule:Update()
     end)
@@ -137,7 +163,7 @@ function OptionsPanelFrame:CreateGUI(name, parent)
     frame.content.barLeft = barLeft
 
     -- BAR TOP
-    local barTop = UIFactory:MakeEditBox(ADDON_NAME.."BarTop", frame.content, "Y (from top)", 75, 25, function(self)
+    local barTop = UIFactory:MakeEditBox(ADDON_NAME.."BarTop", frame.content, "Y (从上)", 75, 25, function(self)
         FiveSecondRule_Options.barTop = tonumber(self:GetText())
         FiveSecondRule:Update()
     end)

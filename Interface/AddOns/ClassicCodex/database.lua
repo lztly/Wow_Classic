@@ -27,7 +27,7 @@ local bitraces = {
     [64] = "Gnome",
     [128] = "Troll"
 }
-  
+
 local bitclasses = {
     [1] = "WARRIOR",
     [2] = "PALADIN",
@@ -296,7 +296,7 @@ function CodexDatabase:SearchItemById(id, meta, maps, allowedTypes)
     -- Allows all markers to be displayed from the browser.
     local minimumDropChance = 0
     if meta["questLogId"] ~= nil then
-        minimumDropChance = CodexConfig.minimumDropChance
+        minimumDropChance = CodexConfig.minimumDropChance or 0
     end
 
     -- Search Unit drops
@@ -392,7 +392,7 @@ function CodexDatabase:SearchVendorByItemName(item, meta)
     return maps
 end
 
-function CodexDatabase:SearchQuestById(id, meta, maps)
+function CodexDatabase:SearchQuestById(id, meta, maps, skipStart)
     local maps = maps or {}
     local meta = meta or {}
 
@@ -403,7 +403,7 @@ function CodexDatabase:SearchQuestById(id, meta, maps)
 
     if CodexConfig.currentQuestGivers then
         -- Find quest starter
-        if quests[id]["start"] and not meta["questLogId"] then
+        if not skipStart and quests[id]["start"] and not meta["questLogId"] then
             -- units
             if quests[id]["start"]["U"] then
                 for _, unit in pairs(quests[id]["start"]["U"]) do
@@ -478,7 +478,7 @@ function CodexDatabase:SearchQuestById(id, meta, maps)
         local objectives = GetNumQuestLeaderBoards(meta["questLogId"])
         local _, _, _, _, _, complete = GetQuestLogTitle(meta["questLogId"])
 
-        if objectives and not complete then
+        if objectives and objectives > 0 and not complete then
             for i = 1, objectives do
                 local text, type, done = GetQuestLogLeaderBoard(i, meta["questLogId"])
 
@@ -560,6 +560,45 @@ function CodexDatabase:SearchQuestByName(quest, meta, partial)
     return maps
 end
 
+QuestieCorrections_questExclusiveGroupFixes = {
+    [463] = {276}, --greenwarden cant be completed if you have trampling paws
+    [415] = {413}, --cant complete rejolds new brew if you do shimmer stout (see issue 567)
+    [1339] = {1338}, -- mountaineer stormpike's task cant be done if you have finished stormpike's order
+    [1943] = {1944}, -- mage robe breadcrumb
+    [526] = {322,324}, -- not 100% sure on this one but it seems lightforge ingots is optional, block it after completing subsequent steps (#587)
+    [3765] = {1275}, -- corruption abroad breadcrumb
+    [164] = {95}, -- deliveries to sven is a breadcrumb
+    -- this is a subquest
+    --[403] = {311}, -- completing the unguarded barrel quest prevents to do the optional guarded barrel prequest
+    [428] = {429}, -- lost deathstalkers breadcrumb
+    [308] = {311}, -- distracting jarven can't be completed once you get the followup
+    -- Tome of Divinity starting quests for dwarfs #703
+    [1645] = {1642,1646,2997,2998,2999,3000,3681}, -- This is repeatable giving an item starting 1646
+    [1646] = {1642,2997,2998,2999,3000,3681},
+    [2997] = {1642,1646,2998,2999,3000,3681},
+    [2999] = {1642,1646,2997,2998,3000,3681},
+    [3000] = {1642,1646,2997,2998,2999,3681},
+    -- Tome of Divinity starting quests for humans #703
+    [1641] = {1642,1646,2997,2998,2999,3000,3861}, -- This is repeatable giving an item starting 1642
+    [1642] = {1646,2997,2998,2999,3000,3861},
+    [2998] = {1642,1646,2997,2998,3000,3861},
+    [3861] = {1642,1646,2997,2998,2999,3000},
+    -- Tome of Valor repeatable starting quests #742
+    [1793] = {1649},
+    [1794] = {1649},
+    [431] = {411}, -- candles of beckoning
+    [410] = {411}, -- the dormant shade
+    -- Tome of Nobility quests #1661
+    [1661] = {4485,4486},
+    [4485] = {1661,4486},
+    [4486] = {1661,4485},
+    -- Voidwalker questline for horde
+    [1473] = {1501},
+    [1501] = {1473},
+    [163] = {5}, -- Raven Hill breadcrumb
+    [1301] = {1302}, -- breadcrumb of James Hyal #917
+}
+
 -- Scans for all available quests
 -- Adds map nodes for each quest starter and ender
 function CodexDatabase:SearchQuests(meta, maps)
@@ -567,6 +606,17 @@ function CodexDatabase:SearchQuests(meta, maps)
     local maps = maps or {}
     local meta = meta or {}
     local completedQuests = GetQuestsCompleted()
+
+    local cor = (QuestieCorrections and QuestieCorrections.questExclusiveGroupFixes) or QuestieCorrections_questExclusiveGroupFixes;
+    if cor then
+        for id, t in pairs(cor) do
+            if completedQuests[id] then
+                for _, q in pairs(t) do
+                    completedQuests[q] = true;
+                end
+            end
+        end
+    end
 
     local playerLevel = UnitLevel("player")
     local playerFaction = UnitFactionGroup("player")
@@ -607,6 +657,8 @@ function CodexDatabase:SearchQuests(meta, maps)
             -- hide completed quests
         elseif quests[id]["pre"] and not completedQuests[quests[id]["pre"]] then
             -- hide missing pre-quest
+        elseif quests[id]["next"] and completedQuests[quests[id]["next"]] then
+            -- ala: hide
         elseif quests[id]["race"] and not (bit.band(quests[id]["race"], playerRace) == playerRace) then
             -- hide non-available quests for your race
         elseif quests[id]["class"] and not (bit.band(quests[id]["class"], playerClass) == playerClass) then
@@ -717,7 +769,8 @@ end
 -- Try to guess the quest ID based on the questlog ID
 -- automatically runs a deep scan if no result was found.
 -- Returns possible quest ID
---[[function CodexDatabase:GetQuestIds(questId, deep)
+--[[
+function CodexDatabase:GetQuestIds(questId, deep)
     local oldId = GetQuestLogSelection()
     SelectQuestLogEntry(questId)
     local text, objective = GetQuestLogQuestText()

@@ -14,7 +14,7 @@ http://classic.wowcat.net/bbs/new/topic/1801-1
 ### ClassicCastbars 目标框架/姓名板施法条 v1.0.7
 http://classic.wowcat.net/bbs/new/topic/1416-1
 
-### ClassicCodex [原pfQuest]强大的全能型任务数据库 - Fan移植 v1.2.2
+### ClassicCodex [原pfQuest]强大的全能型任务数据库 v1.2.2 ala深度精简优
 http://classic.wowcat.net/bbs/new/topic/1626-1
 
 ### ClassicMenus 框架鼠标右键弹出菜单增强 v1.0

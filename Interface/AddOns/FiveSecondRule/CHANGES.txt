@@ -1,16 +1,28 @@
-tag a941ac4da5b98ebdac9229b4c0b5a5350c9f7ced Release-1-4
+tag 15a51c7c9740ff9be485b7b91c5b714316f3a239 Release-1-6
 Author:	Stefan Pedersen <sp@ceptu.com>
-Date:	Thu Sep 12 01:54:39 2019 +0200
+Date:	Fri Oct 4 18:17:32 2019 +0200
 
-commit 45a594da84ff4e89adad82f01d76ed809247bf7c
+commit cb88454a3899fdb9aaefd7a988042acdbf41df77
 Author: Stefan Pedersen <sp@ceptu.com>
-Date:   Thu Sep 12 01:54:27 2019 +0200
+Date:   Fri Oct 4 18:17:17 2019 +0200
 
-    Release 1.4
+    Release version 1.6
 
-commit 8653672f409534d76e6d9b3f27271bf1b2e5d336
+commit ad7bdc721450eee353f0142546ddae2e7552510e
 Author: Stefan Pedersen <sp@ceptu.com>
-Date:   Thu Sep 12 01:53:35 2019 +0200
+Date:   Fri Oct 4 18:16:56 2019 +0200
 
-    Update frame strata
+    Add the option to disable text on the bars.
+
+commit 01ee5fab14520cf4bc39b792ea5114f387dc1780
+Author: Stefan Michael Pedersen <sp@ceptu.com>
+Date:   Wed Sep 25 00:22:16 2019 +0200
+
+    Update readme.
+
+commit 69345f27bf49ab405007452fa07f1377a9d32de4
+Author: Stefan Michael Pedersen <sp@ceptu.com>
+Date:   Wed Sep 25 00:13:53 2019 +0200
+
+    Update readme.
 

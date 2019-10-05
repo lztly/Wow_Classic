@@ -1,15 +1,11 @@
 # FiveSecondRule
 
-This is an addon for **World of Warcraft Classic** (set to release on August 27. 2019).
+This is an addon for **World of Warcraft Classic**
 
-### NOTICE: Make sure the folder is named "FiveSecondRule" when installing the addon.
+The purpose of this addon is to track the so-called "5-second-rule" (5SR), which refers to the time needed to elapse after spending mana, for mana regen to resume.
+Notable, this rule excludes "mp5"-gear. The timer starts counting down whenever the player successfully spends mana (instant spells, that don't cost mana, wont reset the 5SR).
 
-The purpose of this addon is to track the so-called "5-second-rule" (5SR), which refers to the time needed to elapse after spending mana, for mana regen to resume. Notable, this rule excludes "mp5"-gear. 
-
-So far you can only configure the frame slightly:
-
-* Move the frame around.
-* Resize the frame by hand/dragging (no number inputs).
+Once the 5SR has been fulfilled, the bar will show incoming mana regen ticks until full mana.
 
 See the example screenshots below.
 
@@ -20,24 +16,27 @@ See the example screenshots below.
     - Hold LEFT mouse button (on the frame) to move.
 
     - Hold RIGHT mouse button (on the frame) to resize.
-                         
+
   **/fsr lock**     Lock the frame and disable drag.
+
+  **/fsr flat <OPTION>**   Set flat bar mode
+
+    - ON : set the bat to use just a flat color, non textured
+
+    - OFF : set the bar to use a texture, non flat
 
   **/fsr reset**    Resets the position and size of the frame.
 
   **/fsr help**     Print help message.
 
-### Planned Work
+### Known Issues
 
-- Add options frame.
-- Add optional warnings when on low mana (motivate usage of 5SR).
+- Check out the issues tab in this repository.
 
 ### Screenshots
 
-![Chat](https://i.imgur.com/1Rg8Hcm.jpg)
+![FSR Countdown](https://www.warcrafttavern.com/wp-content/uploads/2019/05/Screenshot-2019-09-25-at-00.10.45.png)
 
-![Example 1](https://i.imgur.com/8gIcIBz.jpg)
+![Mana Ticks](https://www.warcrafttavern.com/wp-content/uploads/2019/05/Screenshot-2019-09-25-at-00.10.51.png)
 
-![Example 2](https://i.imgur.com/it2kyVv.jpg)
-
-![Example 3](https://i.imgur.com/jm0ULKH.jpg)
+![Options Panel](https://www.warcrafttavern.com/wp-content/uploads/2019/05/Screenshot-2019-09-25-at-00.12.08.png)
