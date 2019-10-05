@@ -1,4 +1,13 @@
 ## 插件：
+### AbarClassic 玩家/敌对攻击计时条 v0.2  
+http://classic.wowcat.net/bbs/new/topic/1415-1
+
+### alaChat_Classic 聊天增强&大脚表情包 113r.190925  
+http://classic.wowcat.net/bbs/new/topic/1603-1
+
+### BlinkHealthText 数字化状态显示 v2.1
+http://classic.wowcat.net/bbs/new/topic/1791-1
+
 ### BuffTimers 精确Buff时间显示 classic
 http://classic.wowcat.net/bbs/new/topic/1801-1
 
@@ -11,6 +20,9 @@ http://classic.wowcat.net/bbs/new/topic/1626-1
 ### ClassicMenus 框架鼠标右键弹出菜单增强 v1.0
 http://classic.wowcat.net/bbs/new/topic/1629-1
 
+### ClassTrainerPlus 全职业训练师技能学习增强 v0.6  
+http://classic.wowcat.net/bbs/new/topic/1483-1
+
 ### ColoredInventoryItems 物品品质边框着色插件 v1.4
 http://classic.wowcat.net/bbs/new/topic/1635-1
 
@@ -22,6 +34,9 @@ http://classic.wowcat.net/bbs/new/topic/1472-1
 
 ### HideRaidManager 隐藏团队管理框 v1.0.1
 http://classic.wowcat.net/bbs/new/topic/1455-1
+
+### InFlight 飞行时间状态计时器 v1.13.003
+http://classic.wowcat.net/bbs/new/topic/1701-1
 
 ### Inventorian 老牌暴雪风背包整合插件(集成整理按钮) v1.13.2.4
 http://classic.wowcat.net/bbs/new/topic/1634-1
@@ -56,54 +71,49 @@ http://classic.wowcat.net/bbs/new/topic/1607-1
 ### SimpleUnitFrames 暴雪风头像单位框架增强 v11302-4
 http://classic.wowcat.net/bbs/new/topic/1478-1
 
+### SmartAuraWatch 简易状态(Buff/Debuff)触发监视 v1.13.2a
+http://classic.wowcat.net/bbs/new/topic/1777-1
+
 ### tullaRange 动作条距离颜色 v8.2.1
 http://classic.wowcat.net/bbs/new/topic/1427-1
 
 ### zTip 简洁鼠标提示增强 v1.1 classic
 http://classic.wowcat.net/bbs/new/topic/1821-1
 
-### InFlight 飞行时间状态计时器 v1.13.003
-http://classic.wowcat.net/bbs/new/topic/1701-1
-
-### Focused 头像焦距对齐 v1.0.0
-http://classic.wowcat.net/bbs/new/topic/1862-1
-
-### BlinkHealthText 数字化状态显示 v2.1
-http://classic.wowcat.net/bbs/new/topic/1791-1
-
-打开装备自动比较 (常驻)  
+## 命令：
+### 打开装备自动比较 (常驻)  
 ```
 /run SetCVar("alwaysCompareItems", "1")
 ```
 
-命令让伤害数值在怪物头顶“跳”起来，增加游戏“光”方面的代入感，与“音”所融合就是我们所说的游戏打击感。  
+### 命令让伤害数值在怪物头顶“跳”起来，增加游戏“光”方面的代入感，与“音”所融合就是我们所说的游戏打击感。  
 ```
 /console floatingCombatTextCombatDamageDirectionalScale 3
 ```
 
-反和谐  
+### 反和谐  
 ```
 /console SET overrideArchive "0"
 /console SET profanityFiter "0"
 /console SET chatClassColorOverride "0"
 ```
 
-设置血液效果等级 (常驻)  
+### 设置血液效果等级 (常驻)  
 ```
 /console violenceLevel 2
 ```
 
-聊天窗口显示职业颜色 (常驻)  
+### 聊天窗口显示职业颜色 (常驻)  
 ```
 /console SET chatClassColorOverride "0"
 ```
 
-友方姓名板显示职业颜色 (常驻)  
+### 友方姓名板显示职业颜色 (常驻)  
 ```
 /console ShowClassColorInFriendlyNameplate 1
 ```
 
-敌方姓名板显示职业颜色 (常驻)  
+### 敌方姓名板显示职业颜色 (常驻)  
 ```
 /console ShowClassColorInNameplate 1
 ```
