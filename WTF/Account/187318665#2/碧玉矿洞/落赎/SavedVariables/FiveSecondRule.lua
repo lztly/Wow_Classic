@@ -2,8 +2,10 @@
 FiveSecondRule_Options = {
 	["showTicks"] = true,
 	["barLeft"] = 90,
-	["barTop"] = -70,
-	["barHeight"] = 11,
+	["showText"] = true,
+	["flat"] = true,
 	["unlocked"] = false,
+	["barHeight"] = 10,
+	["barTop"] = -70,
 	["barWidth"] = 115,
 }
