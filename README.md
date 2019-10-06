@@ -11,6 +11,9 @@ http://classic.wowcat.net/bbs/new/topic/1791-1
 ### BuffTimers 精确Buff时间显示 classic
 http://classic.wowcat.net/bbs/new/topic/1801-1
 
+### CharacterStatsClassic 全职业暴雪风面板属性状态 v2.1
+http://classic.wowcat.net/bbs/new/topic/1656-1
+
 ### ClassicCastbars 目标框架/姓名板施法条 v1.0.7
 http://classic.wowcat.net/bbs/new/topic/1416-1
 
