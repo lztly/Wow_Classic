@@ -1,0 +1,11 @@
+## Interface: 11302
+## Title: SlashHelp v4.2
+## Version: 4.2
+## Author: SDPhantom
+## SavedVariables: SlashHelpOptions
+
+## Notes: Pops up help on slash commands
+
+SlashHelp.lua
+Options.lua
+Scanner.lua

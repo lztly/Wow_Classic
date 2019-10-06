@@ -74,8 +74,14 @@ http://classic.wowcat.net/bbs/new/topic/1607-1
 ### SimpleUnitFrames 暴雪风头像单位框架增强 v11302-4
 http://classic.wowcat.net/bbs/new/topic/1478-1
 
+### SlashHelp 命令助手 v4.2
+http://classic.wowcat.net/bbs/new/topic/1909-1
+
 ### SmartAuraWatch 简易状态(Buff/Debuff)触发监视 v1.13.2a
 http://classic.wowcat.net/bbs/new/topic/1777-1
+
+### SpellbookAbridged 法术书等级过滤 v2.1
+http://classic.wowcat.net/bbs/new/topic/1880-1
 
 ### tullaRange 动作条距离颜色 v8.2.1
 http://classic.wowcat.net/bbs/new/topic/1427-1
