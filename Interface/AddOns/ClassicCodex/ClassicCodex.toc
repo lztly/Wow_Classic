@@ -61,3 +61,9 @@ quest.lua
 ui.lua
 browser.lua
 
+
+
+## Title-zhCN: |cff880303[有爱]|r ClassicCodex 任务插件
+## Notes-zhCN: |cff00ff00由网易有爱ALA在ClassicCodex原版基础上深度优化，并重做数据库|r
+## X-Vendor: NetEase
+## X-163UI-Version: 20190829154923

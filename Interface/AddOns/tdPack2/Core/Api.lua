@@ -12,12 +12,7 @@ local GetContainerItemLink, GetContainerItemID, GetContainerItemInfo = GetContai
 
 ---@type ns
 local ns = select(2, ...)
-
-local CONTAINERS = {}
-do
-    CONTAINERS[GetItemClassInfo(LE_ITEM_CLASS_CONTAINER)] = true
-    CONTAINERS[GetItemClassInfo(LE_ITEM_CLASS_QUIVER)] = true
-end
+local L = ns.L
 
 local function riter(t, i)
     i = i - 1
@@ -32,10 +27,70 @@ function ns.ripairs(t)
     return riter, t, #t + 1
 end
 
+function ns.memorize(func, nilable)
+    local cache = {}
+    return function(arg1, ...)
+        local value = cache[arg1]
+        if value == nil then
+            value = func(arg1, ...)
+            cache[arg1] = value
+        end
+        return value
+    end
+end
+
+function ns.memorizenilable(func)
+    local cache = {}
+    return function(arg1, ...)
+        local value = cache[arg1]
+        if value == nil then
+            value = func(arg1, ...) or cache
+            cache[arg1] = value
+        end
+        return value ~= cache and value or nil
+    end
+end
+
+local BAGS = {BACKPACK_CONTAINER}
+local BANKS = {BANK_CONTAINER}
+do
+    for i = 1, NUM_BAG_SLOTS do
+        tinsert(BAGS, i)
+    end
+
+    for i = 1, NUM_BANKBAGSLOTS do
+        tinsert(BANKS, i + NUM_BAG_SLOTS)
+    end
+end
+
+local BAGS_SET = tInvert(BAGS)
+local BANKS_SET = tInvert(BANKS)
+
+function ns.IsItemContainer(itemId)
+    local itemEquipLoc = select(5, ns.GetItemInfo(itemId))
+    return itemEquipLoc and itemEquipLoc == 'INVTYPE_BAG'
+end
+
+function ns.IsBag(id)
+    return BAGS_SET[id]
+end
+
+function ns.IsBank(id)
+    return BANKS_SET[id]
+end
+
+function ns.GetBags()
+    return BAGS
+end
+
+function ns.GetBanks()
+    return BANKS
+end
+
 function ns.GetItemInfo(itemId)
-    local itemName, itemType, itemSubType, itemEquipLoc, itemQuality, itemLevel, itemTexture
+    local itemName, itemLink, itemType, itemSubType, itemEquipLoc, itemQuality, itemLevel, itemTexture
     if type(itemId) == 'number' then
-        itemName, _, itemQuality, itemLevel, _, itemType, itemSubType, _, itemEquipLoc, itemTexture =
+        itemName, itemLink, itemQuality, itemLevel, _, itemType, itemSubType, _, itemEquipLoc, itemTexture =
             GetItemInfo(itemId)
     elseif type(itemId) == 'string' then
         assert(false)
@@ -46,7 +101,7 @@ function ns.GetItemInfo(itemId)
         itemType = BATTLE_PET
         itemSubType = BATTLE_PET_SUBTYPES[itemSubType]
     end
-    return itemName, itemType, itemSubType, itemEquipLoc, itemQuality, itemLevel, itemTexture
+    return itemName, itemLink, itemType, itemSubType, itemEquipLoc, itemQuality, itemLevel, itemTexture
 end
 
 function ns.GetItemFamily(itemId)
@@ -56,8 +111,7 @@ function ns.GetItemFamily(itemId)
     if type(itemId) == 'string' then
         return 0
     end
-    local _, itemType = ns.GetItemInfo(itemId)
-    if CONTAINERS[itemType] then
+    if ns.IsItemContainer(itemId) then
         return 0
     end
     return GetItemFamily(itemId)
@@ -112,7 +166,11 @@ function ns.IsBagSlotFull(bag, slot)
         return true
     end
 
-    return stackCount == select(2, GetContainerItemInfo(bag, slot))
+    return stackCount == ns.GetBagSlotCount(bag, slot)
+end
+
+function ns.GetBagSlotCount(bag, slot)
+    return (select(2, GetContainerItemInfo(bag, slot)))
 end
 
 function ns.GetBagSlotFamily(bag, slot)
@@ -141,4 +199,15 @@ else
     function ns.IsFamilyContains(bagFamily, itemFamily)
         return bagFamily == itemFamily
     end
+end
+
+function ns.GetClickToken(button, control, shift, alt)
+    local key
+    if button == 'LeftButton' then
+        key = 1
+    elseif button == 'RightButton' then
+        key = 2
+    end
+
+    return key + (control and 0x10000 or 0) + (shift and 0x20000 or 0) + (alt and 0x40000 or 0)
 end

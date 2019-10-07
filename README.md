@@ -5,6 +5,9 @@ http://classic.wowcat.net/bbs/new/topic/1415-1
 ### alaChat_Classic 聊天增强&大脚表情包 113r.190925  
 http://classic.wowcat.net/bbs/new/topic/1603-1
 
+### BeBlessed 骑士solo/小队简易祝福助手 v1.8
+http://classic.wowcat.net/bbs/new/topic/1822-1
+
 ### BlinkHealthText 数字化状态显示 v2.1
 http://classic.wowcat.net/bbs/new/topic/1791-1
 
@@ -23,14 +26,8 @@ http://classic.wowcat.net/bbs/new/topic/1626-1
 ### ClassicMenus 框架鼠标右键弹出菜单增强 v1.0
 http://classic.wowcat.net/bbs/new/topic/1629-1
 
-### ClassTrainerPlus 全职业训练师技能学习增强 v0.6  
-http://classic.wowcat.net/bbs/new/topic/1483-1
-
 ### ColoredInventoryItems 物品品质边框着色插件 v1.4
 http://classic.wowcat.net/bbs/new/topic/1635-1
-
-### dct 战斗指示器 classic 改
-http://classic.wowcat.net/bbs/new/topic/1761-1
 
 ### EZJunk 自动卖垃圾&显示物品售价二合一 v1.0.1
 http://classic.wowcat.net/bbs/new/topic/1534-1
@@ -59,6 +56,12 @@ http://classic.wowcat.net/bbs/new/topic/1809-1
 ### MonkeyQuest 猴子任务监视助手 v2.10.1c
 http://classic.wowcat.net/bbs/new/topic/1443-1
 
+### NugRunning 全职业法术计时插件 v1.13.23
+http://classic.wowcat.net/bbs/new/topic/1449-1
+
+### OmniCC 技能冷却计时闪光 v8.2.4-classic
+http://classic.wowcat.net/bbs/new/topic/1429-1
+
 ### QuestFrameFixer 修复任务NPC叹号&问号显示 v1.0v2
 http://classic.wowcat.net/bbs/new/topic/1597-1
 
@@ -76,9 +79,6 @@ http://classic.wowcat.net/bbs/new/topic/1478-1
 
 ### SlashHelp 命令助手 v4.2
 http://classic.wowcat.net/bbs/new/topic/1909-1
-
-### SmartAuraWatch 简易状态(Buff/Debuff)触发监视 v1.13.2a
-http://classic.wowcat.net/bbs/new/topic/1777-1
 
 ### SpellbookAbridged 法术书等级过滤 v2.1
 http://classic.wowcat.net/bbs/new/topic/1880-1

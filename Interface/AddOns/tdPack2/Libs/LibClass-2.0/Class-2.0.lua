@@ -1,5 +1,5 @@
 
-local MAJOR, MINOR = 'LibClass-2.0', 7
+local MAJOR, MINOR = 'LibClass-2.0', 8
 local Class = LibStub:NewLibrary(MAJOR, MINOR)
 if not Class then
     return
@@ -22,7 +22,6 @@ local format, wipe, select = string.format, wipe, select
 ---- WOW APIS
 
 local CreateFrame = CreateFrame
-
 
 --[[
      xpcall safecall implementation
@@ -49,22 +48,26 @@ local function CreateDispatcher(argCount)
     ]]
 
     local ARGS = {}
-    for i = 1, argCount do ARGS[i] = "arg"..i end
-    code = code:gsub("ARGS", tconcat(ARGS, ", "))
-    return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(xpcall, errorhandler)
+    for i = 1, argCount do
+        ARGS[i] = 'arg' .. i
+    end
+    code = code:gsub('ARGS', tconcat(ARGS, ', '))
+    return assert(loadstring(code, 'safecall Dispatcher[' .. argCount .. ']'))(xpcall, errorhandler)
 end
 
-local Dispatchers = setmetatable({}, {__index=function(self, argCount)
-    local dispatcher = CreateDispatcher(argCount)
-    rawset(self, argCount, dispatcher)
-    return dispatcher
-end})
+local Dispatchers = setmetatable({}, {
+    __index = function(self, argCount)
+        local dispatcher = CreateDispatcher(argCount)
+        rawset(self, argCount, dispatcher)
+        return dispatcher
+    end,
+})
 Dispatchers[0] = function(func)
     return xpcall(func, errorhandler)
 end
 
 local function safecall(func, ...)
-    return Dispatchers[select("#", ...)](func, ...)
+    return Dispatchers[select('#', ...)](func, ...)
 end
 
 local function safereturn(success, ...)
@@ -112,6 +115,17 @@ function Object:New(...)
         error([[bad argument #self to 'New' (class expected)]], 2)
     end
     return Constructor(self, Create(self._Meta), ...)
+end
+
+function Object:Bind(object, ...)
+    if not Class:IsClass(self) then
+        error([[bad argument #self to 'Bind' (class expected)]], 2)
+    end
+    if Class:IsWidget(object) then
+        return Constructor(self, setmetatable(object, self._Meta), object:GetParent(), ...)
+    else
+        return Constructor(self, setmetatable(object, self._Meta), ...)
+    end
 end
 
 function Object:GetSuper()
@@ -182,27 +196,25 @@ end
 --                      Class
 -----------------------------
 
-local _UIBaseClass = setmetatable(Class._UIBaseClass, {__index = function(t, k)
-    local ok, class = pcall(CreateFrame, k)
-    if ok then
-        class._Meta = {
-            __index = class,
-            __type  = class,
-            __ui    = k,
-        }
-        class:Hide()
-        class.Constructor = class.SetParent
+local _UIBaseClass = setmetatable(Class._UIBaseClass, {
+    __index = function(t, k)
+        local ok, class = pcall(CreateFrame, k)
+        if ok then
+            class._Meta = {__index = class, __type = class, __ui = k}
+            class:Hide()
+            class.Constructor = class.SetParent
 
-        for k, v in pairs(Object) do
-            class[k] = v
+            for k, v in pairs(Object) do
+                class[k] = v
+            end
+
+            t[k] = class
+        else
+            t[k] = false
         end
-
-        t[k] = class
-    else
-        t[k] = false
-    end
-    return t[k]
-end})
+        return t[k]
+    end,
+})
 
 function Class:SuperHelper(super)
     if type(super) == 'string' then
@@ -257,7 +269,7 @@ function Class:New(super)
     class._Meta = CloneMeta(super)
     class._Meta.__index = class
     class._Meta.__super = super
-    class._Meta.__type  = class
+    class._Meta.__type = class
 
     if super then
         class._Meta.__inherit = inherit
@@ -332,10 +344,12 @@ end
 --                    Library
 -----------------------------
 
-local _Classes = setmetatable(Class._Classes, {__index = function(t, k)
-    t[k] = {}
-    return t[k]
-end})
+local _Classes = setmetatable(Class._Classes, {
+    __index = function(t, k)
+        t[k] = {}
+        return t[k]
+    end,
+})
 
 function Class:NewClass(name, ...)
     if _Classes[self][name] then

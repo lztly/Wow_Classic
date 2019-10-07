@@ -1,5 +1,6 @@
 local addons, ns = ...
 local LOCALE = ns.LOCALE;
+local _;
 
 CodexQuest = CreateFrame("Frame")
 
@@ -189,9 +190,9 @@ function CodexQuest:UpdateQuestLog()
                     -- sometimes you got nil and nil, just like the quest 1149 (Test of Faith)
                     if text then
                         local obj, objNum, objNeeded = nil;
-                        obj, objNum, objNeeded = strfind(text, "(.*):%s*([%d]+)%s*/%s*([%d]+)")
+                        _, _, obj, objNum, objNeeded = strfind(text, "(.*):%s*([%d]+)%s*/%s*([%d]+)")
                         if not obj then
-                            obj, objNum, objNeeded = strfind(text, "(.*)：%s*([%d]+)%s*/%s*([%d]+)")
+                            _, _, obj, objNum, objNeeded = strfind(text, "(.*)：%s*([%d]+)%s*/%s*([%d]+)")
                         end
                         objNeeded = tonumber(objNeeded);
                         if obj and objNeeded then

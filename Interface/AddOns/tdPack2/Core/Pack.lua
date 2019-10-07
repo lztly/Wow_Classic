@@ -45,7 +45,7 @@ end
 function Pack:BANKFRAME_CLOSED()
     if self.isBankOpened and self.status ~= STATUS_FREE then
         self:SetStatus(STATUS_CANCEL)
-        self:ShowMessage(L['Leave bank, pack cancel.'], 1, 0, 0)
+        self:Warning(L['Leave bank, pack cancel.'])
     end
     self.isBankOpened = nil
 end
@@ -53,7 +53,7 @@ end
 function Pack:PLAYER_REGEN_DISABLED()
     if self.status ~= STATUS_FREE then
         self:SetStatus(STATUS_CANCEL)
-        self:ShowMessage(L['Player enter combat, pack cancel.'], 1, 0, 0)
+        self:Warning(L['Player enter combat, pack cancel.'])
     end
 end
 
@@ -74,33 +74,34 @@ function Pack:FindSlot(item, tarSlot)
     end
 end
 
-function Pack:Start()
+function Pack:Start(opts)
+    if opts.bank and not opts.bag and not self.isBankOpened then
+        return
+    end
+
     if self.status ~= STATUS_FREE then
-        self:ShowMessage(L['Packing now'], 1, 0, 0)
+        self:Warning(L['Packing now'])
         return
     end
 
     if UnitIsDead('player') then
-        self:ShowMessage(L['Player is dead'], 1, 0, 0)
+        self:Warning(L['Player is dead'])
         return
     end
 
     if InCombatLockdown() then
-        self:ShowMessage(L['Player in combat'], 1, 0, 0)
+        self:Warning(L['Player in combat'])
         return
     end
 
     if GetCursorInfo() then
-        self:ShowMessage(L['Please drop the item, money or skills.'], 1, 0, 0)
+        self:Warning(L['Please drop the item, money or skills.'])
         return
     end
 
+    self.opts = opts
     self:SetStatus(STATUS_READY)
     self:ScheduleRepeatingTimer('OnIdle', 0.05)
-end
-
-function GG()
-    Pack:Start()
 end
 
 function Pack:Stop()
@@ -111,18 +112,39 @@ function Pack:Stop()
     self:SetStatus(STATUS_FREE)
 end
 
-function Pack:ShowMessage(text, r, g, b)
-    ns.Addon:Printf(text)
+function Pack:Message(text)
+    if not ns.Addon:IsConsoleEnabled() then
+        return
+    end
+    ns.Addon:Print(text)
 end
 
-local bags = {bag = {0, 1, 2, 3, 4}, bank = {0, 1, 2, 3, 4, -1, 5, 6, 7, 8, 9, 10, 11}}
+function Pack:Warning(text)
+    return self:Message(format('|cffff0000%s|r', text))
+end
+
+function Pack:IterateBags()
+    return coroutine.wrap(function()
+        if self:IsOptionBag() then
+            for _, bag in ipairs(ns.GetBags()) do
+                coroutine.yield(bag)
+            end
+        end
+
+        if self:IsOptionBank() then
+            if self.isBankOpened then
+                for _, bag in ipairs(ns.GetBanks()) do
+                    coroutine.yield(bag)
+                end
+            end
+        end
+    end)
+end
 
 function Pack:StackReady()
-    for _, bag in ipairs(self.isBankOpened and bags.bank or bags.bag) do
+    for bag in self:IterateBags() do
         for slot = 1, ns.GetBagNumSlots(bag) do
-            if not ns.IsBagSlotEmpty(bag, slot) and not ns.IsBagSlotFull(bag, slot) then
-                tinsert(self.slots, ns.Slot:New(nil, bag, slot))
-            end
+            tinsert(self.slots, ns.Slot:New(nil, bag, slot))
         end
     end
 end
@@ -131,11 +153,35 @@ function Pack:Stack()
     local stackingSlots = {}
     local complete = true
 
+    local function isCanStack(slot)
+        if slot:IsEmpty() then
+            return false
+        end
+        if not slot:IsFull() then
+            return true
+        end
+
+        if not self:IsOptionBank() or not self:IsOptionBag() then
+            return false
+        end
+
+        local stacking = stackingSlots[slot:GetItemId()]
+        if not stacking then
+            return false
+        end
+
+        if stacking:IsBank() and slot:IsBag() then
+            return true
+        end
+
+        return false
+    end
+
     for i, slot in ripairs(self.slots) do
         if slot:IsLocked() then
             complete = false
         else
-            if not slot:IsEmpty() and not slot:IsFull() then
+            if isCanStack(slot) then
                 local itemId = slot:GetItemId()
                 if stackingSlots[itemId] then
                     slot:MoveTo(stackingSlots[itemId])
@@ -162,10 +208,12 @@ function Pack:PackReady()
 
     local bag, bank
 
-    bag = ns.Bag:New('bag')
-    tinsert(self.bags, bag)
+    if self:IsOptionBag() then
+        bag = ns.Bag:New('bag')
+        tinsert(self.bags, bag)
+    end
 
-    if self.isBankOpened then
+    if self:IsOptionBank() then
         bank = ns.Bag:New('bank')
         tinsert(self.bags, bank)
 
@@ -190,7 +238,10 @@ function Pack:PackReady()
 
         bank:Sort()
     end
-    bag:Sort()
+
+    if bag then
+        bag:Sort()
+    end
 end
 
 function Pack:Pack()
@@ -253,7 +304,7 @@ end
 
 function Pack:StatusFinish()
     self:Stop()
-    self:ShowMessage(L['Pack finish.'], 0, 1, 0)
+    self:Message(L['Pack finish.'])
 end
 
 function Pack:StatusCancel()
@@ -275,4 +326,16 @@ function Pack:OnIdle()
     if proc then
         proc(self)
     end
+end
+
+function Pack:IsOptionBag()
+    return self.opts.bag
+end
+
+function Pack:IsOptionBank()
+    return self.opts.bank and self.isBankOpened
+end
+
+function Pack:IsOptionReverse()
+    return self.opts.reverse
 end

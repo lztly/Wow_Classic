@@ -6,6 +6,7 @@
 local select, ipairs, fastrandom = select, ipairs, fastrandom
 local tinsert, tremove = table.insert, table.remove
 local band = bit.band
+local random = fastrandom or math.random
 
 local InCombatLockdown = InCombatLockdown
 
@@ -35,7 +36,7 @@ end
 function Group:InitSlots()
     local bags = self:GetParent():GetBags()
 
-    if ns.Addon:IsReversePack() then
+    if ns.Pack:IsOptionReverse() then
         for _, bag in ripairs(bags) do
             if ns.GetBagFamily(bag) == self.family then
                 for slot = ns.GetBagNumSlots(bag), 1, -1 do
@@ -106,7 +107,7 @@ function Group:Pack()
         end
 
         local item = self.items[index]
-        if item:GetItemId() ~= tarSlot:GetItemId() then
+        if not tarSlot:IsItemIn(item) then
             local slot = ns.FindSlot(item, tarSlot)
             if not slot then
                 return false, 'pack: not found target slot ' .. item:GetItemName() .. ' goto ' .. tarSlot.bag .. ' ' ..
@@ -125,6 +126,7 @@ function Group:Pack()
     return true
 end
 
+---@return Slot
 function Group:GetIdleSlot()
     local step = fastrandom(0, 1) == 0 and -1 or 1
     local e = fastrandom(1, self:GetItemCount())
@@ -144,7 +146,7 @@ function Group:FindSlot(item, tarSlot)
         return
     end
     for _, slot in ripairs(self.slots) do
-        if slot:GetItemId() == item:GetItemId() and not slot:IsLocked() then
+        if slot:IsItemIn(item) and not slot:IsLocked() then
             return slot
         end
     end
@@ -158,7 +160,7 @@ function Group:FilterSlots()
     end
 
     for i, item in ripairs(self.items) do
-        if self:GetSlot(i):GetItemId() == item:GetItemId() then
+        if self:GetSlot(i):IsItemIn(item) then
             tremove(self.slots, i)
             tremove(self.items, i)
         end

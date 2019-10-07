@@ -1,0 +1,9 @@
+## Interface: 11302
+## Title: Be|cffF58CBABlessed|r
+## Version: 1.8
+## Notes: Paladin blessings
+## Author: Janniie - Stormreaver EU
+## SavedVariables: BeBlessedData
+
+core.lua
+partyframe.lua
