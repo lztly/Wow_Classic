@@ -27,7 +27,7 @@ local bitraces = {
     [64] = "Gnome",
     [128] = "Troll"
 }
-
+  
 local bitclasses = {
     [1] = "WARRIOR",
     [2] = "PALADIN",
@@ -41,15 +41,31 @@ local bitclasses = {
 }
 
 function CodexDatabase:PlayerHasSkill(skill)
+    local minRank = 0
+    if type(skill) == 'table' then
+        minRank = skill.min
+        skill = skill.id
+    end
     if not professions[skill] then return false end
 
     for i = 0, GetNumSkillLines() do
-        if GetSkillLineInfo(i) == professions[skill] then
+        local name, _, _, rank = GetSkillLineInfo(i)
+        if name == professions[skill] and rank >= minRank then
             return true
         end
     end
 
     return false
+end
+
+function CodexDatabase:PlayerHasReputation(repu)
+    local minRank = 0
+    if type(repu) == 'table' then
+        minRank = repu.min
+        repu = repu.id
+    end
+    local _, _, _, _, _, rank = GetFactionInfoByID(repu)
+    return rank and rank > minRank
 end
 
 function CodexDatabase:GetBitByRace(model)
@@ -145,41 +161,101 @@ function CodexDatabase:GetRaceMaskById(id, db)
 end
 
 -- Scans DB by name and returns list of matching IDs
-function CodexDatabase:GetIdByName(name, db, partial)
+function CodexDatabase:GetIdByName(name, db, partial, searchLimit)
     if not CodexDB[db] then return nil end
     local result = {}
-
+    local count = 0
+    
     for key, value in pairs(CodexDB[db]["loc"]) do
         if db == "quests" then value = value["T"] end
 
         if value and name then
             if partial == true and strfind(strlower(value), strlower(name), 1, true) then
                 result[key] = value
+                count = count + 1
+                if searchLimit and (count >= searchLimit) then break end
             elseif partial == "LOWER" and strlower(value) == strlower(name) then
                 result[key] = value
+                count = count + 1
+                if searchLimit and (count >= searchLimit) then break end
             elseif value == name then
                 result[key] = value
+                count = count + 1
+                if searchLimit and (count >= searchLimit) then break end
             end
         end
     end
 
-    return result
+    return result, count
 end
 
-function CodexDatabase:GetIdByPartialId(partialId, db)
+function CodexDatabase:GetIdByPartialId(partialId, db, exact, searchLimit)
     if not CodexDB[db] then return nil end
     local result = {}
+    
+    if exact then
+        partialId = tonumber(partialId)
+        local value = CodexDB[db]["loc"][partialId]
+        if not value then return {}, 0 end
+        if db == "quests" then value = value["T"] end
+        result[partialId] = value
+        return result, 1
+    end
 
+    local count = 0
     for key, value in pairs(CodexDB[db]["loc"]) do
         if db == "quests" then value = value["T"] end
 
         if partialId and value and strfind(tostring(key), partialId) then
             result[key] = value
+            count = count + 1
+            if searchLimit and (count >= searchLimit) then break end
         end
-
     end
 
-    return result
+    return result, count
+end
+
+function CodexDatabase:SearchQuestInSet(questSet, name, db, exact, searchLimit)
+    if db ~= 'quests' or not CodexDB[db] then
+        return {}, 0
+    end
+
+    local lvl = tonumber(name)
+    local lvlMatch = lvl and true or false
+    if lvlMatch and not exact then
+        lvl = lvl - (lvl % 10)
+    end
+
+    local function lvlEqual(questId, lvl)
+        if not quests[questId] then return false end
+        local questLvl = quests[questId].lvl or quests[questId].min or 1
+        if not exact then questLvl = questLvl - (questLvl % 10) end
+        return questLvl == lvl
+    end
+
+    local function nameMatched(title, name)
+        if exact then return title == name end
+        return strfind(title, name)
+    end
+
+    local result = {}
+    local count = 0
+    local noFilter = strlen(name) == 0
+
+    for questId, _ in pairs(questSet) do
+        questId = tonumber(questId)
+        if CodexDB[db]["loc"][questId] then
+            local title = CodexDB[db]["loc"][questId]["T"]
+            if noFilter or (lvlMatch and lvlEqual(questId, lvl)) or (not lvlMatch and nameMatched(title, name)) then
+                result[questId] = title
+                count = count + 1
+                if searchLimit and (count >= searchLimit) then break end
+            end
+        end
+    end
+
+    return result, count
 end
 
 -- Scans a map table for all spawns
@@ -296,7 +372,7 @@ function CodexDatabase:SearchItemById(id, meta, maps, allowedTypes)
     -- Allows all markers to be displayed from the browser.
     local minimumDropChance = 0
     if meta["questLogId"] ~= nil then
-        minimumDropChance = CodexConfig.minimumDropChance or 0
+        minimumDropChance = CodexConfig.minimumDropChance
     end
 
     -- Search Unit drops
@@ -392,7 +468,7 @@ function CodexDatabase:SearchVendorByItemName(item, meta)
     return maps
 end
 
-function CodexDatabase:SearchQuestById(id, meta, maps, skipStart)
+function CodexDatabase:SearchQuestById(id, meta, maps)
     local maps = maps or {}
     local meta = meta or {}
 
@@ -403,7 +479,7 @@ function CodexDatabase:SearchQuestById(id, meta, maps, skipStart)
 
     if CodexConfig.currentQuestGivers then
         -- Find quest starter
-        if not skipStart and quests[id]["start"] and not meta["questLogId"] then
+        if quests[id]["start"] and not meta["questLogId"] then
             -- units
             if quests[id]["start"]["U"] then
                 for _, unit in pairs(quests[id]["start"]["U"]) do
@@ -478,7 +554,7 @@ function CodexDatabase:SearchQuestById(id, meta, maps, skipStart)
         local objectives = GetNumQuestLeaderBoards(meta["questLogId"])
         local _, _, _, _, _, complete = GetQuestLogTitle(meta["questLogId"])
 
-        if objectives and objectives > 0 and not complete then
+        if objectives and not complete then
             for i = 1, objectives do
                 local text, type, done = GetQuestLogLeaderBoard(i, meta["questLogId"])
 
@@ -560,45 +636,6 @@ function CodexDatabase:SearchQuestByName(quest, meta, partial)
     return maps
 end
 
-QuestieCorrections_questExclusiveGroupFixes = {
-    [463] = {276}, --greenwarden cant be completed if you have trampling paws
-    [415] = {413}, --cant complete rejolds new brew if you do shimmer stout (see issue 567)
-    [1339] = {1338}, -- mountaineer stormpike's task cant be done if you have finished stormpike's order
-    [1943] = {1944}, -- mage robe breadcrumb
-    [526] = {322,324}, -- not 100% sure on this one but it seems lightforge ingots is optional, block it after completing subsequent steps (#587)
-    [3765] = {1275}, -- corruption abroad breadcrumb
-    [164] = {95}, -- deliveries to sven is a breadcrumb
-    -- this is a subquest
-    --[403] = {311}, -- completing the unguarded barrel quest prevents to do the optional guarded barrel prequest
-    [428] = {429}, -- lost deathstalkers breadcrumb
-    [308] = {311}, -- distracting jarven can't be completed once you get the followup
-    -- Tome of Divinity starting quests for dwarfs #703
-    [1645] = {1642,1646,2997,2998,2999,3000,3681}, -- This is repeatable giving an item starting 1646
-    [1646] = {1642,2997,2998,2999,3000,3681},
-    [2997] = {1642,1646,2998,2999,3000,3681},
-    [2999] = {1642,1646,2997,2998,3000,3681},
-    [3000] = {1642,1646,2997,2998,2999,3681},
-    -- Tome of Divinity starting quests for humans #703
-    [1641] = {1642,1646,2997,2998,2999,3000,3861}, -- This is repeatable giving an item starting 1642
-    [1642] = {1646,2997,2998,2999,3000,3861},
-    [2998] = {1642,1646,2997,2998,3000,3861},
-    [3861] = {1642,1646,2997,2998,2999,3000},
-    -- Tome of Valor repeatable starting quests #742
-    [1793] = {1649},
-    [1794] = {1649},
-    [431] = {411}, -- candles of beckoning
-    [410] = {411}, -- the dormant shade
-    -- Tome of Nobility quests #1661
-    [1661] = {4485,4486},
-    [4485] = {1661,4486},
-    [4486] = {1661,4485},
-    -- Voidwalker questline for horde
-    [1473] = {1501},
-    [1501] = {1473},
-    [163] = {5}, -- Raven Hill breadcrumb
-    [1301] = {1302}, -- breadcrumb of James Hyal #917
-}
-
 -- Scans for all available quests
 -- Adds map nodes for each quest starter and ender
 function CodexDatabase:SearchQuests(meta, maps)
@@ -606,17 +643,6 @@ function CodexDatabase:SearchQuests(meta, maps)
     local maps = maps or {}
     local meta = meta or {}
     local completedQuests = GetQuestsCompleted()
-
-    local cor = (QuestieCorrections and QuestieCorrections.questExclusiveGroupFixes) or QuestieCorrections_questExclusiveGroupFixes;
-    if cor then
-        for id, t in pairs(cor) do
-            if completedQuests[id] then
-                for _, q in pairs(t) do
-                    completedQuests[q] = true;
-                end
-            end
-        end
-    end
 
     local playerLevel = UnitLevel("player")
     local playerFaction = UnitFactionGroup("player")
@@ -645,6 +671,30 @@ function CodexDatabase:SearchQuests(meta, maps)
         end
     end
 
+    local function oneOfCompleted(questIds)
+        if type(questIds) ~= 'table' then
+            return completedQuests[questIds]
+        end
+        for _,id in pairs(questIds) do
+            if completedQuests[id] then
+                return true
+            end
+        end
+        return false
+    end
+
+    local function allCompleted(questIds)
+        if type(questIds) ~= 'table' then
+            return completedQuests[questIds]
+        end
+        for _,id in pairs(questIds) do
+            if not completedQuests[id] then
+                return false
+            end
+        end
+        return true
+    end
+
     for id in pairs(quests) do
         minLevel = quests[id]["min"] or quests[id]["lvl"] or playerLevel
         maxLevel = quests[id]["lvl"] or quests[id]["min"] or playerLevel
@@ -655,10 +705,16 @@ function CodexDatabase:SearchQuests(meta, maps)
             -- hide quests hidden by the player
         elseif CodexHiddenQuests[id] then
             -- hide completed quests
-        elseif quests[id]["pre"] and not completedQuests[quests[id]["pre"]] then
+        elseif quests[id]["pre"] and not oneOfCompleted(quests[id]["pre"]) then
             -- hide missing pre-quest
+            -- Need to complete one of these quests to pick up the quest
+        elseif quests[id]["preg"] and not allCompleted(quests[id]["preg"]) then
+            -- hide missing pre-quest groups
+            -- Need to complete all these quests to pick up the quest
         elseif quests[id]["next"] and completedQuests[quests[id]["next"]] then
-            -- ala: hide
+            -- hide unavailable quest because the next quest in the quest chain has been completed
+        elseif quests[id]["excl"] and oneOfCompleted(quests[id]["excl"]) then
+            -- hide unavailable quest because a quest that is mutually exclusive with the current quest has been completed
         elseif quests[id]["race"] and not (bit.band(quests[id]["race"], playerRace) == playerRace) then
             -- hide non-available quests for your race
         elseif quests[id]["class"] and not (bit.band(quests[id]["class"], playerClass) == playerClass) then
@@ -669,12 +725,14 @@ function CodexDatabase:SearchQuests(meta, maps)
             -- hide very high level quests
         elseif quests[id]["min"] and quests[id]["min"] > playerLevel + 3 then
             -- hide quests high level quests
-        elseif math.abs(minLevel - maxLevel) >= 30 and not CodexConfig.showFestival then
+        elseif quests[id]["hide"] and not CodexConfig.showFestival then
             -- hide event quests
         elseif minLevel > playerLevel and not CodexConfig.showHighLevel then
             -- hide level+3 quests
         elseif quests[id]["skill"] and not CodexDatabase:PlayerHasSkill(quests[id]["skill"]) then
             -- hide non-available quests for your profession??
+        elseif quests[id]["repu"] and not CodexDatabase:PlayerHasReputation(quests[id]["repu"]) then
+            -- hide non-available quests for poor reputation
         elseif id == 3861 then
             -- Hide the CLUCK! quest
         else
@@ -822,10 +880,6 @@ function CodexDatabase:GetQuestIds(questId, deep)
 end
 ]]
 
--- browser search related defaults and value
-CodexDatabase.lastSearchQuery = ""
-CodexDatabase.lastSearchResults = {["items"] = {}, ["quests"] = {}, ["objects"] = {}, ["units"] = {}}
-
 -- BrowserSearch
 -- Search for a list of IDs of the specified `searchType` based on if `query` is
 -- part of the name or ID of the database entry it is compared against.
@@ -841,59 +895,54 @@ CodexDatabase.lastSearchResults = {["items"] = {}, ["quests"] = {}, ["objects"] 
 -- E.g.: {{[5] = "Some Name", [231] = "Another Name"}, 2}
 -- If the query doesn't satisfy the minimum search length requiered for its
 -- type (number/string), the favourites for the `searchType` are returned.
-function CodexDatabase:BrowserSearch(query, searchType)
+function CodexDatabase:BrowserSearch(query, searchType, searchLimit)
+    -- Search Mode: 1: title matching, 2: id matching, 3: completed quests, 4: hidden quests
+    local searchMode = 1
+
+    local questSet = nil
+    if strlen(query) >= 1 then
+        if query:sub(1, 1) == '@' then
+            -- Start with @ to search complated quests
+            searchMode = 3
+            questSet = GetQuestsCompleted()
+            query = query:sub(2)
+        elseif query:sub(1, 1) == '!' then
+            -- Start with @ to search manually hidden quests
+            searchMode = 4
+            questSet = CodexHiddenQuests
+            query = query:sub(2)
+        end
+    end
+    -- Start with # for exact match, such as "#123" or "#The People's Militia"
+    local exactMatch = false
+    if strlen(query) >= 1 and query:sub(1, 1) == '#' then
+        exactMatch = true
+        query = query:sub(2)
+    end
+
+    if searchMode == 1 and tonumber(query) then
+        searchMode = 2
+    end
+
     local queryLength = strlen(query)
-    local queryNumber = tonumber(query)
     local results = {}
     local resultCount = 0
 
     -- Set the DB to be searched
     local minChars = 3
     local minInts = 1
-    if (queryLength >= minChars) or (queryNumber and (queryLength >= minInts)) then
-        if ((queryLength > minChars) or (queryNumber and (queryLength > minInts)))
-            and (CodexDatabase.lastSearchQuery ~= "" and queryLength > strlen(CodexDatabase.lastSearchQuery))
-        then
-            local searchDatabase = CodexDatabase.lastSearchResults[searchType]
-            for id in pairs(searchDatabase) do
-                local db = CodexDB[searchType]["loc"][id]
-                if db then
-                    local compared
-                    local search = query
-                    if queryNumber then
-                        compare = tostring(id)
-                    else
-                        search = strlower(query)
-                        if searchType == "quests" then
-                            compare = strlower(db["T"])
-                        else
-                            compare = strlower(db)
-                        end
-                    end
-                    if strfind(compare, search) then
-                        results[id] = db
-                        resultCount = resultCount + 1
-                    end
-                end
-            end
-            
-            return results, resultCount
+    if questSet or (queryLength >= minChars) or (searchMode == 2 and (queryLength >= minInts)) then
+        if questSet then
+            results, resultCount = CodexDatabase:SearchQuestInSet(questSet, query, searchType, exactMatch, searchLimit)
+        elseif searchMode == 2 then
+            results, resultCount = CodexDatabase:GetIdByPartialId(query, searchType, exactMatch, searchLimit)
         else
-            if queryNumber then
-                results = CodexDatabase:GetIdByPartialId(query, searchType)
-            else
-                results = CodexDatabase:GetIdByName(query, searchType, true)
-            end
-            local resultCount = 0
-            for _, _ in pairs(results) do
-                resultCount = resultCount + 1
-            end
-
-            return results, resultCount
+            results, resultCount = CodexDatabase:GetIdByName(query, searchType, not exactMatch, searchLimit)
         end
+
+        return results, resultCount, searchMode
     else
         -- min search length not satisfied, reset search results and return favorites or nil
-        return {}, -1
+        return {}, -1, nil
     end
 end
-            

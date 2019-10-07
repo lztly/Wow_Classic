@@ -1,12 +1,10 @@
 ## Interface: 11302
+## X-Min-Interface: 11302
+
 ## Title: ClassicCodex
-## Title-zhCN: ClassicCodex
-## TItle-zhTW: ClassicCodex
 ## Notes: ClassicCodex
-## Notes-zhCN: |cff00ff00ClassicCodex|r
-## Notes-zhTW: |cff00ff00ClassicCodex|r
 ## Author: Pgarneau, Shagu
-## Version: 1.2.2-ALA1005-L0
+## Version: 1.2.2
 ## SavedVariablesPerCharacter: CodexConfig, CodexHiddenQuests, CodexBrowserFavorites, CodexColors
 
 # database index
@@ -17,6 +15,9 @@ db\objects.lua
 db\refloot.lua
 db\quests.lua
 db\meta.lua
+
+# database patches
+db-patches\quests-patch.lua
 
 # database enUS
 db\enUS\items.lua
@@ -47,10 +48,13 @@ lib\LibStub\LibStub.lua
 lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
 lib\HereBeDragons\HereBeDragons-2.0.lua
 lib\HereBeDragons\HereBeDragons-Pins-2.0.lua
+lib\AceLocale-3.0\AceLocale-3.0.lua
 
+# locales
+locale\enUS.lua
+locale\zhCN.lua
+locale\zhTW.lua
 
-
-UI_LOCALE.lua
 # main
 command.lua
 config.lua
@@ -60,10 +64,3 @@ map.lua
 quest.lua
 ui.lua
 browser.lua
-
-
-
-## Title-zhCN: |cff880303[有爱]|r ClassicCodex 任务插件
-## Notes-zhCN: |cff00ff00由网易有爱ALA在ClassicCodex原版基础上深度优化，并重做数据库|r
-## X-Vendor: NetEase
-## X-163UI-Version: 20190829154923

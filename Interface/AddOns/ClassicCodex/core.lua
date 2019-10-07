@@ -36,30 +36,3 @@ function Codex:tablelen(table)
     for _ in pairs(table) do count = count + 1 end
     return count
 end
-
-
-local function ALA_DEBUG()
-    local data = {};
-    local _, numQuests = GetNumQuestLogEntries()
-    local found = 0;
-    for questLogId = 1, 40 do
-        local name, _, _, header, _, complete, _, questId = GetQuestLogTitle(questLogId)
-        if not header then
-            tinsert(data, name .. "[" .. questId .. "]");
-            found = found + 1
-            if found >= numQuests then
-                break
-            end
-        end
-    end
-    _G.ALA_DEBUG_DATA = data;
-    local cb = ChatEdit_ChooseBoxForSend();
-    cb:SetText("");
-    cb:Insert("/tinspect ALA_DEBUG_DATA");
-    cb:GetScript("OnEnterPressed")(cb);
-    _G.ALA_DEBUG_DATA = nil;
-end
-SLASH_ALADEBUG1 = "/alaCodexDebug";
-SLASH_ALADEBUG2 = "/acd";
-SlashCmdList["ALADEBUG"] = ALA_DEBUG;
-
