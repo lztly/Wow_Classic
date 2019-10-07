@@ -8,7 +8,7 @@
 
 LCB_FontSize			= 10;		-- Size of Text Font
 
-CastingBarTimer_DisplayString	= " (%0.2fs)";
+CastingBarTimer_DisplayString	= " (%0.1fs)";
 
 -- Function: Add count down timer to the Cast/Channelling Bar Frame.
 function LysCastingBarFrame_OnUpdate( self, ... )
