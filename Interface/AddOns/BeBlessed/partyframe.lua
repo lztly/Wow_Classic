@@ -139,13 +139,16 @@ function BeBlessed:CreateBuffFrame()
     --f.texture:SetColorTexture(0,0,0,0.3);
 
     f:SetScript("OnMouseDown", function(self)
-        self:StartMoving();
+        if IsShiftKeyDown() then
+            self:StartMoving();
+        end
     end)
+    
     f:SetScript("OnMouseUp", function(self)
         self:StopMovingOrSizing();
         savePosition();
     end)
-
+    
     f.title = f:CreateFontString();
     f.title:SetFont("Fonts\\FRIZQT__.TTF",14,"OUTLINE");
     f.title:SetText("Be|cffF58CBABlessed|r");
@@ -288,7 +291,8 @@ function BeBlessed:CreateBuffFrame()
                         local remaining = status.duration - (GetTime() - status.applied);
                         if (remaining <= 0) then
                             P.text:SetTextColor(1,0,0, textAlpha);
-                            P.text:SetText("None");
+                            P.text:SetFont("Fonts\\ARHei.TTF",14,"OUTLINE");
+                            P.text:SetText("缺少");
                         else
                             local minutes = floor(remaining / 60);
                             local seconds = floor(remaining - 60*minutes);
@@ -311,14 +315,17 @@ function BeBlessed:CreateBuffFrame()
                         end
                     elseif buff_present then
                         P.text:SetTextColor(1,1,0, textAlpha);
-                        P.text:SetText("Buffed");
+                        P.text:SetFont("Fonts\\ARHei.TTF",14,"OUTLINE");
+                        P.text:SetText("存在");
                     else
                         P.text:SetTextColor(1,0,0, textAlpha);
-                        P.text:SetText("None");
+                        P.text:SetFont("Fonts\\ARHei.TTF",14,"OUTLINE");
+                        P.text:SetText("缺少");
                     end 
                 else
                     P.text:SetTextColor(1,0,0, textAlpha);
-                    P.text:SetText("None");
+                    P.text:SetFont("Fonts\\ARHei.TTF",14,"OUTLINE");
+                    P.text:SetText("缺少");
                 end
                 P:Show();
             end
