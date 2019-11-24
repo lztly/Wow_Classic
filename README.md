@@ -41,9 +41,6 @@ http://classic.wowcat.net/bbs/new/topic/1455-1
 ### Inventorian 老牌暴雪风背包整合插件(集成整理按钮) v1.13.2.4
 http://classic.wowcat.net/bbs/new/topic/1634-1
 
-### ItemTooltipProfessionIcons 物品的专业/任务/鼠标提示 v1.1.2
-http://classic.wowcat.net/bbs/new/topic/1661-1
-
 ### Leatrix_Maps 大地图综合增强,显示未探测区域&副本位置图标 v1.13.
 http://classic.wowcat.net/bbs/new/topic/1598-1
 
@@ -52,9 +49,6 @@ http://classic.wowcat.net/bbs/new/topic/1766-1
 
 ### LysCastingBarTimer 默认施法条施法时间显示 Classic-0.2
 http://classic.wowcat.net/bbs/new/topic/1809-1
-
-### MonkeyQuest 猴子任务监视助手 v2.10.1c
-http://classic.wowcat.net/bbs/new/topic/1443-1
 
 ### NugRunning 全职业法术计时插件 v1.13.23
 http://classic.wowcat.net/bbs/new/topic/1449-1
@@ -76,9 +70,6 @@ http://classic.wowcat.net/bbs/new/topic/1607-1
 
 ### SimpleUnitFrames 暴雪风头像单位框架增强 v11302-4
 http://classic.wowcat.net/bbs/new/topic/1478-1
-
-### SlashHelp 命令助手 v4.2
-http://classic.wowcat.net/bbs/new/topic/1909-1
 
 ### SpellbookAbridged 法术书等级过滤 v2.1
 http://classic.wowcat.net/bbs/new/topic/1880-1
