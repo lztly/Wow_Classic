@@ -14,9 +14,6 @@ local _G = _G;
 local SC_DATA3 = L.SC_DATA3;
 if not SC_DATA3 then return;end
 ----------------------------------------------------------------------------------------------------
-if not __alaBase then
-	return;
-end
 ----------------------------------------------------------------------------------------------------
 _G.ALA_GetSpellLink = _G.ALA_GetSpellLink or  function(id, name)
 	--\124cff71d5ff\124Hspell:355\124h[嘲讽]\124h\124r
@@ -53,10 +50,10 @@ function SpellButton_OnModifiedClick(self, button, ...)
 		local link = _GetSpellLink(spellId, spellName);
 		if link then
 			local editBox = ChatEdit_ChooseBoxForSend();
-			editBox:Show();
-			editBox:SetFocus();
-			editBox:Insert(link);
-			return;
+			if editBox:HasFocus() then
+				editBox:Insert(link);
+				return;
+			end
 		end
 	end
 	return Orig_SpellButton_OnModifiedClick(self, button, ...)
@@ -116,7 +113,7 @@ local function _cf__SendChatMessage_hyperLinkEnhanced(msg, ctype, lang, id, ...)
 	if control_hyperLinkEnhanced then
 		if ctype == "CHANNEL" then
 			local _, cn = GetChannelName(id);
-			if string.find(cn, SC_DATA3[1]) or string.find(cn, SC_DATA3[2]) then
+			if cn and string.find(cn, SC_DATA3[1]) or string.find(cn, SC_DATA3[2]) then
 				while true do
 					local s, e, c, n = string.find(msg, "\124cff%x%x%x%x%x%x\124Hitem([:0-9]+)\124h([[][^\124]+[]])\124h\124r");
 					if not s then break;end

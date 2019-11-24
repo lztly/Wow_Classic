@@ -19,11 +19,24 @@ for k, v in pairs(UnitPopupButtonsExtra) do
     v.text = v[locale] or k
     UnitPopupButtons[k] = v
 end
+tinsert(UnitPopupMenus["SELF"], 1, "NAME_COPY")
 
 tinsert(UnitPopupMenus["FRIEND"], 1, "NAME_COPY")
 tinsert(UnitPopupMenus["FRIEND"], 1, "SEND_WHO")
 tinsert(UnitPopupMenus["FRIEND"], 1, "FRIEND_ADD")
 tinsert(UnitPopupMenus["FRIEND"], 1, "GUILD_ADD")
+
+tinsert(UnitPopupMenus["FRIEND_OFFLINE"], 1, "NAME_COPY")
+
+tinsert(UnitPopupMenus["PLAYER"], 1, "NAME_COPY")
+tinsert(UnitPopupMenus["PLAYER"], 1, "SEND_WHO")
+tinsert(UnitPopupMenus["PLAYER"], 1, "FRIEND_ADD")
+tinsert(UnitPopupMenus["PLAYER"], 1, "GUILD_ADD")
+
+tinsert(UnitPopupMenus["RAID_PLAYER"], 1, "NAME_COPY")
+tinsert(UnitPopupMenus["RAID_PLAYER"], 1, "SEND_WHO")
+tinsert(UnitPopupMenus["RAID_PLAYER"], 1, "FRIEND_ADD")
+tinsert(UnitPopupMenus["RAID_PLAYER"], 1, "GUILD_ADD")
 
 tinsert(UnitPopupMenus["CHAT_ROSTER"], 1, "NAME_COPY")
 tinsert(UnitPopupMenus["CHAT_ROSTER"], 1, "SEND_WHO")
@@ -32,6 +45,13 @@ tinsert(UnitPopupMenus["CHAT_ROSTER"], 1, "INVITE")
 
 tinsert(UnitPopupMenus["GUILD"], 1, "NAME_COPY")
 tinsert(UnitPopupMenus["GUILD"], 1, "FRIEND_ADD")
+
+tinsert(UnitPopupMenus["ENEMY_PLAYER"], 1, "NAME_COPY")
+tinsert(UnitPopupMenus["OTHERPET"], 1, "NAME_COPY")
+tinsert(UnitPopupMenus["TARGET"], 1, "NAME_COPY")
+
+--tinsert(UnitPopupMenus["BN_FRIEND_OFFLINE"], 1, "BN_TAG_COPY")
+--tinsert(UnitPopupMenus["BN_FRIEND_OFFLINE"], 1, "BN_NAME_COPY")
 
 local function popupClick(self, info)
     local editBox

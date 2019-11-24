@@ -11,9 +11,6 @@ if not L then return;end
 local math, table, string, pairs, type, select, tonumber, unpack = math, table, string, pairs, type, select, tonumber, unpack;
 local _G = _G;
 ----------------------------------------------------------------------------------------------------
-if not __alaBase then
-	return;
-end
 ----------------------------------------------------------------------------------------------------
 local control_hyperLinkHoverShow = false;
 local LinkHoverType = {

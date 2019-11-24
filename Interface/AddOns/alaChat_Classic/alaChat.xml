@@ -21,7 +21,8 @@
     <!-- <script file="chatFrame.lua"/> -->
     <script file="WelcomeToGuild.lua"/>
     <script file="copy.lua"/>
-    <script file="keyWordHighlight.lua"/>
+    <script file="chat_filter.lua"/>
+    <script file="statReport.lua"/>
 
     <include file = "Bindings.xml" />
 

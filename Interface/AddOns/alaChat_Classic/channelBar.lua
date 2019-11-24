@@ -87,6 +87,16 @@ local function SetEditBoxHeader(idx)
 				end);
 			end
 	else
+		if chatType == "INSTANCE_CHAT" then
+			if C_PvP.IsPVPMap() then
+			elseif IsInRaid() then
+				chatType = "RAID";
+			elseif IsInGroup() then
+				chatType = "PARTY";
+			else
+				return;
+			end
+		end
 		if editBox:HasFocus() and (chatType == editBox:GetAttribute("chatType") or ((chatType == "WHISPER" or chatType == "INSTANCE_CHAT") and editBox:GetText() == PREF[idx])) then
 			ChatEdit_DeactivateChat(editBox);
 		else

@@ -26,9 +26,6 @@ local math,table,string,pairs,type,select,tonumber,unpack=math,table,string,pair
 ----------------------------------------------------------------------------------------------------
 local random=random;
 --------------------------------------------------
-if not __alaBase then
-	return;
-end
 ------------------------
 local pName;
 local rName;

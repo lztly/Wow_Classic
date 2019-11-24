@@ -8,7 +8,12 @@
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## Author: alex
-## Version: 113r.190925
+## Version: 113r.191120
 
 alaChat.xml
 
+
+
+## Title-zhCN: |cff880303[有爱]|r alaChat 聊天增强
+## X-Vendor: NetEase
+## X-163UI-Version: 20191024172635

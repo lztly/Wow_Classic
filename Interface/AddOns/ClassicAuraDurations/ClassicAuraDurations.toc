@@ -12,3 +12,4 @@ Libs\LibAuraTypes\LibAuraTypes.lua
 Libs\LibSpellLocks\LibSpellLocks.lua
 
 code.lua
+

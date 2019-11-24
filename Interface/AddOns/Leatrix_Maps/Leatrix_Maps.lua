@@ -1,6 +1,6 @@
 
 	----------------------------------------------------------------------
-	-- 	Leatrix Maps 1.13.33 (2nd October 2019)
+	-- 	Leatrix Maps 1.13.37 (20th November 2019)
 	----------------------------------------------------------------------
 
 	-- 10:Func, 20:Comm, 30:Evnt, 40:Panl
@@ -12,8 +12,8 @@
 	local LeaMapsLC, LeaMapsCB, LeaConfigList = {}, {}, {}
 
 	-- Version
-	LeaMapsLC["AddonVer"] = "1.13.33"
-	LeaMapsLC["RestartReq"] = false
+	LeaMapsLC["AddonVer"] = "1.13.37"
+	LeaMapsLC["RestartReq"] = nil
 
 	-- Get locale table
 	local void, Leatrix_Maps = ...
@@ -39,6 +39,28 @@
 
 		-- Get player faction
 		local playerFaction = UnitFactionGroup("player")
+
+		----------------------------------------------------------------------
+		-- Hide town and city icons
+		----------------------------------------------------------------------
+
+		if LeaMapsLC["HideTownCityIcons"] == "On" then
+			hooksecurefunc(BaseMapPoiPinMixin, "OnAcquired", function(self)
+				local wmapID = WorldMapFrame.mapID
+				if wmapID and wmapID == 1414 or wmapID == 1415 or wmapID == 947 then
+					if self.Texture and self.Texture:GetTexture() == 136441 then 
+						local a, b, c, d, e, f, g, h = self.Texture:GetTexCoord()
+						if a == 0.5 and b == 0 and c == 0.5 and d == 0.125 and e == 0.625 and f == 0 and g == 0.625 and h == 0.125 then
+							-- Hide town icons
+							self:Hide()
+						elseif a == 0.625 and b == 0 and c == 0.625 and d == 0.125 and e == 0.75 and f == 0 and g == 0.75 and h == 0.125 then
+							-- Hide city icons
+							self:Hide()
+						end
+					end
+				end
+			end)
+		end
 
 		----------------------------------------------------------------------
 		-- Use class icons
@@ -746,6 +768,30 @@
 			WorldMapFrame:ClearAllPoints()
 			WorldMapFrame:SetPoint(LeaMapsLC["MapPosA"], UIParent, LeaMapsLC["MapPosR"], LeaMapsLC["MapPosX"], LeaMapsLC["MapPosY"])
 
+			-- Function to set position after Carbonite has loaded
+			local function CaboniteFix()
+				hooksecurefunc(WorldMapFrame, "Show", function()
+					if Nx.db.profile.Map.MaxOverride == false then
+						WorldMapFrame:ClearAllPoints()
+						WorldMapFrame:SetPoint(LeaMapsLC["MapPosA"], UIParent, LeaMapsLC["MapPosR"], LeaMapsLC["MapPosX"], LeaMapsLC["MapPosY"])
+					end
+				end)
+			end
+
+			-- Run function when Carbonite has loaded
+			if IsAddOnLoaded("Carbonite") then
+				CaboniteFix()
+			else
+				local waitFrame = CreateFrame("FRAME")
+				waitFrame:RegisterEvent("ADDON_LOADED")
+				waitFrame:SetScript("OnEvent", function(self, event, arg1)
+					if arg1 == "Carbonite" then
+						CaboniteFix()
+						waitFrame:UnregisterAllEvents()
+					end
+				end)
+			end
+
 		end
 
 		----------------------------------------------------------------------
@@ -944,7 +990,7 @@
 
 				--[[Durotar]] [1411] = {
 					{"TravelH", 50.9, 13.9, L["Zeppelin to"] .. " " .. L["Undercity"] .. ", " .. L["Tirisfal Glades"], nil, fHTex, nil, nil, nil, nil},
-					{"TravelH", 50.6, 12.6, L["Zeppelin to"] .. " " .. L["Grom'gol base Camp"] .. ", " .. L["Stranglethorn Vale"], nil, fHTex, nil, nil, nil, nil},
+					{"TravelH", 50.6, 12.6, L["Zeppelin to"] .. " " .. L["Grom'gol Base Camp"] .. ", " .. L["Stranglethorn Vale"], nil, fHTex, nil, nil, nil, nil},
 				},
 				--[[The Barrens]] [1413] = {
 					{"Dungeon", 46.0, 36.4, L["Wailing Caverns"], L["Dungeon"], dnTex, 17, 24}, {"Dungeon", 42.9, 90.2, L["Razorfen Kraul"], L["Dungeon"], dnTex, 29, 38}, {"Dungeon", 49.0, 93.9, L["Razorfen Downs"], L["Dungeon"], dnTex, 37, 46},
@@ -981,10 +1027,15 @@
 					{"FlightH", 21.6, 74.1, L["Shadowprey Village"] .. ", " .. L["Desolace"], nil, tHTex, nil, nil},
 				},
 				--[[Feralas]] [1444] = {
-					-- {58.9, 41.5, L["Dire Maul"], L["Dungeon"], dnTex, 55, 60},
 					{"FlightA", 30.2, 43.2, L["Feathermoon Stronghold"] .. ", " .. L["Feralas"], nil, tATex, nil, nil},
 					{"FlightH", 75.4, 44.4, L["Camp Mojache"] .. ", " .. L["Feralas"], nil, tHTex, nil, nil},
 					{"FlightA", 89.5, 45.9, L["Lower Wilds"] .. ", " .. L["Feralas"], nil, tATex, nil, nil},
+					{"Dungeon", 62.5, 24.9, L["Dire Maul (North)"], L["Dungeon"], dnTex, 56, 60},
+					{"Dungeon", 60.3, 30.2, L["Dire Maul (West)"], L["Dungeon"], dnTex, 56, 60},
+					{"Dungeon", 64.8, 30.2, L["Dire Maul (East)"], L["Dungeon"], dnTex, 56, 60},
+					{"TravelA", 43.3, 42.8, L["Boat to"] .. " " .. L["Feathermoon Stronghold"] .. ", " .. L["Feralas"], nil, fATex, nil, nil},
+					{"TravelA", 31.0, 39.8, L["Boat to"] .. " " .. L["The Forgotten Coast"] .. ", " .. L["Feralas"], nil, fATex, nil, nil},
+					-- {"Dungeon", 77.1, 36.9, L["Dire Maul (East)"], L["The Hidden Reach (requires Crescent Key)"], dnTex, 56, 60},
 				},
 				--[[Dustwallow Marsh]] [1445] = {
 					{"Raid", 52.6, 76.8, L["Onyxia's Lair"], L["Raid"], rdTex, 60, 60},
@@ -1570,6 +1621,40 @@
 		end
 
 		----------------------------------------------------------------------
+		-- Create panel in game options panel
+		----------------------------------------------------------------------
+
+		do
+
+			local interPanel = CreateFrame("FRAME")
+			interPanel.name = "Leatrix Maps"
+
+			local maintitle = LeaMapsLC:MakeTx(interPanel, "Leatrix Maps", 0, 0)
+			maintitle:SetFont(maintitle:GetFont(), 72)
+			maintitle:ClearAllPoints()
+			maintitle:SetPoint("TOP", 0, -72)
+
+			local subTitle = LeaMapsLC:MakeTx(interPanel, "curseforge.com/wow/addons/leatrix-maps-classic", 0, 0)
+			subTitle:SetFont(subTitle:GetFont(), 20)
+			subTitle:ClearAllPoints()
+			subTitle:SetPoint("BOTTOM", 0, 72)
+
+			local slashTitle = LeaMapsLC:MakeTx(interPanel, "/ltm", 0, 0)
+			slashTitle:SetFont(slashTitle:GetFont(), 72)
+			slashTitle:ClearAllPoints()
+			slashTitle:SetPoint("BOTTOM", subTitle, "TOP", 0, 40)
+
+			local pTex = interPanel:CreateTexture(nil, "BACKGROUND")
+			pTex:SetAllPoints()
+			pTex:SetTexture("Interface\\GLUES\\Models\\UI_MainMenu\\swordgradient2")
+			pTex:SetAlpha(0.2)
+			pTex:SetTexCoord(0, 1, 1, 0)
+
+			InterfaceOptions_AddCategory(interPanel)
+
+		end
+
+		----------------------------------------------------------------------
 		-- Final code
 		----------------------------------------------------------------------
 
@@ -1864,9 +1949,10 @@
 
 	-- Set reload button status
 	function LeaMapsLC:ReloadCheck()
-		if	(LeaMapsLC["NoMapBorder"] ~= LeaMapsDB["NoMapBorder"])		-- Remove map border
-		or	(LeaMapsLC["UseClassIcons"] ~= LeaMapsDB["UseClassIcons"])	-- Use class colors
-		or	(LeaMapsLC["UseDefaultMap"] ~= LeaMapsDB["UseDefaultMap"])	-- Use default map
+		if	(LeaMapsLC["NoMapBorder"] ~= LeaMapsDB["NoMapBorder"])				-- Remove map border
+		or	(LeaMapsLC["UseClassIcons"] ~= LeaMapsDB["UseClassIcons"])			-- Use class colors
+		or	(LeaMapsLC["UseDefaultMap"] ~= LeaMapsDB["UseDefaultMap"])			-- Use default map
+		or	(LeaMapsLC["HideTownCityIcons"] ~= LeaMapsDB["HideTownCityIcons"])	-- Hide town and city icons
 		then
 			-- Enable the reload button
 			LeaMapsLC:LockItem(LeaMapsCB["ReloadUIButton"], false)
@@ -2162,6 +2248,7 @@
 				LeaMapsDB["ShowZoneLevels"] = "On"
 				LeaMapsDB["ShowFishingLevels"] = "On"
 				LeaMapsDB["ShowCoords"] = "On"
+				LeaMapsDB["HideTownCityIcons"] = "On"
 
 				-- Settings
 				LeaMapsDB["ShowMinimapIcon"] = "On"
@@ -2252,6 +2339,7 @@
 			LeaMapsLC:LoadVarChk("ShowZoneLevels", "On")				-- Show zone levels
 			LeaMapsLC:LoadVarChk("ShowFishingLevels", "On")				-- Show fishing levels
 			LeaMapsLC:LoadVarChk("ShowCoords", "On")					-- Show coordinates
+			LeaMapsLC:LoadVarChk("HideTownCityIcons", "On")				-- Hide town and city icons
 
 			-- Settings
 			LeaMapsLC:LoadVarChk("ShowMinimapIcon", "On")				-- Show minimap button
@@ -2308,6 +2396,7 @@
 			LeaMapsDB["ShowZoneLevels"] = LeaMapsLC["ShowZoneLevels"]
 			LeaMapsDB["ShowFishingLevels"] = LeaMapsLC["ShowFishingLevels"]
 			LeaMapsDB["ShowCoords"] = LeaMapsLC["ShowCoords"]
+			LeaMapsDB["HideTownCityIcons"] = LeaMapsLC["HideTownCityIcons"]
 
 			-- Settings
 			LeaMapsDB["ShowMinimapIcon"] = LeaMapsLC["ShowMinimapIcon"]
@@ -2424,9 +2513,10 @@
 	LeaMapsLC:MakeCB(PageF, "ShowPointsOfInterest", "Show points of interest", 225, -112, false, "If checked, points of interest will be shown.")
 	LeaMapsLC:MakeCB(PageF, "ShowZoneLevels", "Show zone levels", 225, -132, false, "If checked, zone, dungeon and fishing skill levels will be shown.")
 	LeaMapsLC:MakeCB(PageF, "ShowCoords", "Show coordinates", 225, -152, false, "If checked, coordinates will be shown.")
+	LeaMapsLC:MakeCB(PageF, "HideTownCityIcons", "Hide town and city icons", 225, -172, true, "If checked, town and city icons will not be shown on the continent maps.")
 
-	LeaMapsLC:MakeTx(PageF, "Settings", 225, -192)
-	LeaMapsLC:MakeCB(PageF, "ShowMinimapIcon", "Show minimap button", 225, -212, false, "If checked, the minimap button will be shown.")
+	LeaMapsLC:MakeTx(PageF, "Settings", 225, -212)
+	LeaMapsLC:MakeCB(PageF, "ShowMinimapIcon", "Show minimap button", 225, -232, false, "If checked, the minimap button will be shown.")
 
  	LeaMapsLC:CfgBtn("RevTintBtn", LeaMapsCB["RevealMap"])
  	LeaMapsLC:CfgBtn("EnlargePlayerArrowBtn", LeaMapsCB["EnlargePlayerArrow"])

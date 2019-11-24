@@ -8,9 +8,6 @@ local math,table,string,pairs,type,select,tonumber,unpack=math,table,string,pair
 local _G=_G;
 local GameTooltip=GameTooltip;
 ----------------------------------------------------------------------------------------------------
-if not __alaBase then
-	return;
-end
 local __alaBaseBtn_Version=1.07;
 if __alaBaseBtn and __alaBaseBtn.Version>=__alaBaseBtn_Version then
 	return;
@@ -27,6 +24,7 @@ local backdrop = {
 	insets = { left = 0, right = 0, top = 0, bottom = 0 }
 };
 local backdropColor = { 0.15, 0.15, 0.15, 0.33 };
+local locale = GetLocale()
 
 if __alaBaseBtn then
 	for k,v in pairs(__alaBaseBtn) do
@@ -64,8 +62,13 @@ local function onEnter(self)
 			GameTooltip:AddLine(v());
 		end
 	end
-	--GameTooltip:AddLine("\124cffff40ff按住ctrl右击重置位置\124r");
-	--GameTooltip:AddLine("\124cffff40ff按住ctrl拖动移动位置\124r");
+	-- if locale == "zhCN" or locale == "zhTW" then
+	-- 	GameTooltip:AddLine("\124cffff40ff按住ctrl拖动移动位置\124r");
+	-- 	GameTooltip:AddLine("\124cffff40ff按住ctrl右击重置位置\124r");
+	-- else
+	-- 	GameTooltip:AddLine("\124cffff40ffHolding ctrl and left-drag to move\124r");
+	-- 	GameTooltip:AddLine("\124cffff40ffHolding ctrl and right-click to reset pos\124r");
+	-- end
 	GameTooltip:Show();
 end
 local function onLeave(self)
@@ -139,6 +142,36 @@ local function onClickPB(self,button,...)
 		onClickP(self.panel);
 	end
 end
+
+function alaBaseBtn:ArrangeBtn(start_pos, end_pos)
+	-- alaBaseData.xBtn.dir
+	-- print(alaBaseData.xBtn.dir)
+	local list = self.BtnList;
+	local pos = 0;
+	if start_pos then
+		for i = 1, start_pos-1 do
+			pos = pos + list[i].n;
+		end
+	else
+		start_pos = 1;
+	end
+	end_pos = end_pos or list.n;
+	for i = start_pos, end_pos do
+		local l = list[i];
+		for j = 1, l.n do
+			pos = pos + 1;
+			local b = l[j];
+			if b then
+				b:ClearAllPoints();
+				if alaBaseData.xBtn.dir == "HORIZONTAL" then
+					b:SetPoint("TOP", self, "TOP", (btnSize+btnInterval) * (pos - 1), 0);
+				elseif alaBaseData.xBtn.dir == "VERTICAL" then
+					b:SetPoint("TOP", self, "TOP", 0, - (btnSize+btnInterval) * (pos - 1));
+				end
+			end
+		end
+	end
+end
 --posIndexMajor,posIndexMinor,btn,customScript,resize,show
 --posIndexMajor,btn,customScript,resize,show
 --btn,customScript,resize,show
@@ -177,20 +210,21 @@ function alaBaseBtn:AddBtn(posIndexMajor,posIndexMinor,btn,customScript,resize,s
 	end
 	table.insert(list[posIndexMajor],posIndexMinor,btn);
 	local pos=0;
-	for i=1,posIndexMajor-1 do
-		pos=pos+list[i].n;
-	end
-	for i=posIndexMajor,list.n do
-		local l=list[i];
-		for j=1,l.n do
-			pos=pos+1;
-			local b=l[j];
-			if b then
-				b:ClearAllPoints();
-				b:SetPoint("TOP",self,"TOP",(btnSize+btnInterval)*(pos-1),0);
-			end
-		end
-	end
+	alaBaseBtn:ArrangeBtn(posIndexMajor);
+	-- for i=1,posIndexMajor-1 do
+	-- 	pos=pos+list[i].n;
+	-- end
+	-- for i=posIndexMajor,list.n do
+	-- 	local l=list[i];
+	-- 	for j=1,l.n do
+	-- 		pos=pos+1;
+	-- 		local b=l[j];
+	-- 		if b then
+	-- 			b:ClearAllPoints();
+	-- 			b:SetPoint("TOP",self,"TOP",(btnSize+btnInterval)*(pos-1),0);
+	-- 		end
+	-- 	end
+	-- end
 	btn.AnchorParent=self;
 	if not customScript then
 		btn:SetScript("OnClick",onClick);
@@ -257,21 +291,22 @@ function alaBaseBtn:RemoveBtn(posIndexMajor,posIndexMinor,hide)
 				end
 			end
 		end
-		local pos=0;
-		for i=1,list.n do
-			local l=list[i];
-			for j=1,l.n do
-				pos=pos+1;
-				local b=l[j];
-				if b then
-					b:ClearAllPoints();
-					b:SetPoint("TOP",self,"TOP",(btnSize+btnInterval)*(pos-1),0);
-				end
-			end
-		end
+		alaBaseBtn:ArrangeBtn();
+		-- local pos=0;
+		-- for i=1,list.n do
+		-- 	local l=list[i];
+		-- 	for j=1,l.n do
+		-- 		pos=pos+1;
+		-- 		local b=l[j];
+		-- 		if b then
+		-- 			b:ClearAllPoints();
+		-- 			b:SetPoint("TOP",self,"TOP",(btnSize+btnInterval)*(pos-1),0);
+		-- 		end
+		-- 	end
+		-- end
 	end
 end
-function alaBaseBtn:AddPanelBtn(panel,Btn)
+function alaBaseBtn:AddPanelBtn(panel,Btn)	-- MAYBE BROKEN
     --Btn:SetMovable(false);
 	if type(panel)=="number" or type(panel)=="string" then
 	    panel=self.BPList[panel];
@@ -496,10 +531,12 @@ function alaBaseBtn:SetEditBox()
 		for i = 1, NUM_CHAT_WINDOWS do
 			local editbox = _G["ChatFrame" .. i .. "EditBox"];
 			local chatframe = _G["ChatFrame" .. i];
-			if chatframe:GetBottom()>editbox:GetBottom() then
+			--print(editbox:GetTop(), chatframe:GetBottom(), chatframe:GetBottom() - editbox:GetTop())
+			if ((editbox:GetTop() <= chatframe:GetBottom()) and (chatframe:GetBottom() - editbox:GetTop() < btnSize * alaBaseData.xBtn.scale)) or (editbox.bottom and (math.abs(editbox.bottom - editbox:GetBottom()) <= 0.5)) then
 				editbox:ClearAllPoints();
-				editbox:SetPoint("TOPLEFT", chatframe, "BOTTOMLEFT", - 5, - 5 - btnSize*alaBaseData.xBtn.scale);
-				editbox:SetPoint("TOPRIGHT", chatframe, "BOTTOMRIGHT", - 5, - 5 - btnSize*alaBaseData.xBtn.scale);
+				editbox:SetPoint("TOPLEFT", chatframe, "BOTTOMLEFT", - 5, - 5 - btnSize * alaBaseData.xBtn.scale);
+				editbox:SetPoint("TOPRIGHT", chatframe, "BOTTOMRIGHT", - 5, - 5 - btnSize * alaBaseData.xBtn.scale);
+				editbox.bottom = editbox:GetBottom();
 			end
 		end
 end
@@ -507,26 +544,29 @@ function alaBaseBtn:ResetEditBox()
 		for i = 1, NUM_CHAT_WINDOWS do
 			local editbox = _G["ChatFrame" .. i .. "EditBox"];
 			local chatframe = _G["ChatFrame" .. i];
-			editbox:ClearAllPoints();
-			editbox:SetPoint("TOPLEFT", chatframe, "BOTTOMLEFT", -5, -2);
-			editbox:SetPoint("TOPRIGHT", chatframe, "BOTTOMRIGHT", -5, -2);
+			if editbox.bottom and math.abs(editbox.bottom - editbox:GetBottom()) <= 0.5 then
+				editbox:ClearAllPoints();
+				editbox:SetPoint("TOPLEFT", chatframe, "BOTTOMLEFT", -5, -2);
+				editbox:SetPoint("TOPRIGHT", chatframe, "BOTTOMRIGHT", -5, -2);
+				editbox.bottom = nil;
+			end
 		end
 end
 function alaBaseBtn:ResetPoint()
-	alaBaseData = alaBaseData or {};
-	alaBaseData.xBtn = alaBaseData.xBtn or {};
-	alaBaseData.xBtn.posEx = alaBaseData.xBtn.posEx or "BELOW_EDITBOX";
-	alaBaseData.xBtn.scale = alaBaseData.xBtn.scale or 1.0;
+	--print(alaBaseData.xBtn.posEx)
 	self:ClearAllPoints();
 	if alaBaseData.xBtn.posEx == "ABOVE_EDITOBX" then
-		self:SetPoint("TOPLEFT", ChatFrame1, "BOTTOMLEFT", 0, -6);
+		self:SetPoint("BOTTOMLEFT", ChatFrame1EditBox, "TOPLEFT", 0, -1);
+		self:SetEditBox();
 	elseif alaBaseData.xBtn.posEx == "BELOW_EDITBOX" then
 		self:SetPoint("TOPLEFT", ChatFrame1EditBox, "BOTTOMLEFT", 0, -1);
+		self:ResetEditBox();
 	elseif alaBaseData.xBtn.posEx == "ABOVE_CHATFRAME" then
 		self:SetPoint("BOTTOMLEFT", ChatFrame1Tab, "TOPLEFT", 0, 1);
+		self:ResetEditBox();
 	end
-	self:ResetEditBox();
-	alaBaseBtn:RecordPos();
+	--self:ResetEditBox();
+	alaBaseData.xBtn.pos = nil;
 end
 
 function alaBaseBtn:Scale(s)
@@ -541,14 +581,16 @@ function alaBaseBtn:Alpha(a)
 	self:SetAlpha(a);
 end
 function alaBaseBtn:Pos(p)
+	--print(p)
 	if p ~= alaBaseData.xBtn.posEx and (p == "ABOVE_EDITOBX" or p == "BELOW_EDITBOX" or p == "ABOVE_CHATFRAME") then
 		alaBaseData.xBtn.posEx = p;--ABOVE_EDITOBX,BELOW_EDITBOX,ABOVE_CHATFRAME
 		self:ResetPoint();
-		if p == "ABOVE_EDITOBX" then
-			self:SetEditBox();
-		else
-			self:ResetEditBox();
-		end
+	end
+end
+function alaBaseBtn:Dir(d)
+	if d ~= alaBaseData.xBtn.dir and (d == "HORIZONTAL" or d == "VERTICAL") then
+		alaBaseData.xBtn.dir = d;
+		self:ArrangeBtn();
 	end
 end
 function alaBaseBtn:Style(s)
@@ -616,10 +658,12 @@ function alaBaseBtn:Style(s)
 	end
 end
 
-eventCall("PLAYER_ENTERING_WORLD",function()
+alaBaseBtn:RegisterEvent("PLAYER_ENTERING_WORLD");
+alaBaseBtn:SetScript("OnEvent", function()
 										alaBaseData = alaBaseData or {};
 										alaBaseData.xBtn = alaBaseData.xBtn or {};
 										alaBaseData.xBtn.posEx = alaBaseData.xBtn.posEx or "BELOW_EDITBOX";
+										alaBaseData.xBtn.dir = alaBaseData.xBtn.dir or "HORIZONTAL";
 										alaBaseData.xBtn.scale = alaBaseData.xBtn.scale or 1.0;
 										alaBaseData.xBtn.alpha = alaBaseData.xBtn.alpha or 1.0;
 										alaBaseData.xBtn.style = alaBaseData.xBtn.style or 'ala';
@@ -650,4 +694,5 @@ eventCall("PLAYER_ENTERING_WORLD",function()
 										--	alaBaseBtn:ResetPoint();
 										--end
 									end
-								,false);
+);
+

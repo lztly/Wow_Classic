@@ -3,9 +3,10 @@
 
 ## Title: ClassicCodex
 ## Notes: ClassicCodex
-## Author: Pgarneau, Shagu
-## Version: 1.2.2
+## Author: Pgarneau, Shagu, SwimmingTiger
+## Version: v1.3.3
 ## SavedVariablesPerCharacter: CodexConfig, CodexHiddenQuests, CodexBrowserFavorites, CodexColors
+## X-Curse-Project-ID: 351302
 
 # database index
 db\init.lua
@@ -49,9 +50,15 @@ lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
 lib\HereBeDragons\HereBeDragons-2.0.lua
 lib\HereBeDragons\HereBeDragons-Pins-2.0.lua
 lib\AceLocale-3.0\AceLocale-3.0.lua
+lib\AceGUI-3.0\AceGUI-3.0.xml
+lib\AceConsole-3.0\AceConsole-3.0.lua
+lib\AceConfig-3.0\AceConfig-3.0.xml
 
 # locales
 locale\enUS.lua
+locale\esES.lua
+locale\esMX.lua
+locale\ruRU.lua
 locale\zhCN.lua
 locale\zhTW.lua
 

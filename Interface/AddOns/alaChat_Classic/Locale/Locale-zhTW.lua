@@ -124,9 +124,12 @@ L.CHATBAR = {
 	LINE_DBM3 = "\124cff80ffffRight click to cancel countdown\124r",
 	T_STAT = "屬性通報",
 	LINE_STAT1 = "屬性報告",
+	LINE_STAT2 = "左键生成全面报告",
+	LINE_STAT3 = "右键生成偏DPS报告",
 	KEYWORDHEIGHLIGHT_0 = "關鍵字突出顯示",
 	KEYWORDHEIGHLIGHT_1 = "左鍵編輯關鍵字",
 	KEYWORDHEIGHLIGHT_2 = "右鍵清空關鍵字",
+	KEYWORDHEIGHLIGHT_3 = "按回车输入多个关键词",
 	READYCHECK = "就位確認",
 };
 L.EMOTE_STRING = {
@@ -148,12 +151,14 @@ L.CONFIG = {
 	wel					 = "\124cffff3f3falaChat\124r已加載,/alac或/alachat打開設置。\n设置窗口移动到【ESC - 界面設置 - 插件(右上角) - alaChat_Classic】",
 	title				 = "設置",
 
-	position			 = "位置",
+	position			 = "位置(按住CTRL可拖动)",
+	direction				 = "方向",
 	scale				 = "縮放",
 	alpha				 = "ALPHA",
 	barStyle			 = "图标风格",
 
 	shortChannelName	 = "短頻道名",
+	shortChannelNameFormat	 = "短频道名格式",
 	hyperLinkEnhanced	 = "聊天超鏈接(同時允許shift點擊發送技能書技能)",
 	chatEmote			 = "聊天表情",
 	ColorNameByClass	 = "聊天職業著色",
@@ -178,8 +183,9 @@ L.CONFIG = {
 		label			 = "頻道切換欄",
 	},
 	filterQuestAnn		 = "NONE",
-	--
-	--
+	channel_Ignore_Switch	 = "公共频道开关",
+	bfWorld_Ignore_Switch	 = "世界频道开关",
+	bfWorld_Ignore_BtnSize	 = "按钮大小",
 	--chatFrameScroll		 = "聊天框左側滾動到底部按鈕",
 	roll				 = "Roll",
 	DBMCountDown		 = "倒計時",
@@ -194,10 +200,16 @@ L.CONFIG = {
 	level				 = "聊天窗體顯示公會成員等級",
 	--hideConfBtn		 = "隱藏選項設置齒輪",
 	editBoxTab			 = "聊天框Tab鍵切換頻道",
-	restoreAfterWhisper	 = "私聊和頻道聊天之後恢復到上次的聊天頻道",
+	restoreAfterWhisper	 = "私聊後恢復到上次的聊天頻道",
+	restoreAfterChannel	 = "頻道聊天後恢復到上次的聊天頻道",
 	hyperLinkHoverShow	 = "鼠標指向聊天框的物品鏈接時顯示提示",
 	keyWordHighlight	 = "關鍵字突出顯示",
 	keyWordColor		 = "突出顯示顔色",
+	keyWordHighlight_Exc = "只显示匹配的聊天",
+	chat_filter				 = "聊天过滤",
+	chat_filter_word		 = "过滤关键词",
+	chat_filter_reverse		 = "反向过滤(显示匹配关键词的聊天)",
+	chat_filter_word_NOTES	 = "回车换行，每行一个关键词",
 };
 L.REPORT = {
 	neckLevel			 = "項鏈",

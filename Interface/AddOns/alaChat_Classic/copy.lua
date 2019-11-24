@@ -11,10 +11,6 @@ if not L then return;end
 local math,table,string,pairs,type,select,tonumber,unpack=math,table,string,pairs,type,select,tonumber,unpack;
 local _G=_G;
 ----------------------------------------------------------------------------------------------------
-local alaBaseBtn=__alaBaseBtn;
-if not alaBaseBtn then
-	return;
-end
 --------------------------------------------------copy
 local control_copy=false;
 local function insertEditBox(text)
@@ -27,7 +23,7 @@ local orig_timeStamp=CHAT_TIMESTAMP_FORMAT;
 
 local copy_color = "7f7fff";
 local stamp_fmt = "#s";
-local gsubfmt = "";
+--local gsubfmt = "";
 
 local function set(fmt)
 	if fmt then
@@ -36,7 +32,7 @@ local function set(fmt)
 	else
 		CHAT_TIMESTAMP_FORMAT="\124cff" .. copy_color .. "\124HalaCCopy:-1\124h" .. string.gsub(stamp_fmt, "#s", "**") .. "\124h\124r";
 	end
-	gsubfmt = "\124cff" .. copy_color .. "\124HalaCCopy:-1\124h**\124h\124r";
+	--gsubfmt = "\124cff" .. copy_color .. "\124HalaCCopy:-1\124h**\124h\124r";
 end
 local function setColor(r, g, b)
 	copy_color = string.format("%.2x%.2x%.2x", r * 255, g * 255, b* 255);
@@ -75,9 +71,9 @@ local function hook_SetHyperlink(self,link)
 		end
 		--tx=string.gsub(tx,"\124cff%x%x%x%x%x%x\124H[^:]+[1-9-:]+\124h(.*)\124h\124r")
 		--tx=string.gsub(tx,"\124cffffffff\124H[^:]+[1-9-:]+\124h(.*)\124h\124r","%1");
-		tx=string.gsub(tx,gsubfmt,"");
+		--tx=string.gsub(tx,gsubfmt,"");
 		tx=string.gsub(tx,"\124H.-\124h","");
-		tx=string.gsub(tx,"\124cff%x%x%x%x%x%x","");
+		tx=string.gsub(tx,"\124c%x%x%x%x%x%x%x%x","");
 		tx=string.gsub(tx,"\124h","");
 		tx=string.gsub(tx,"\124r","");
 		insertEditBox(tx);
