@@ -1,8 +1,0 @@
-﻿## Interface: 11302
-## Title: |cFF0dea38EZ|r Junk
-## Author: thisbarker
-## Notes: Automatically sells junk
-## Version: 1.0.1
-
-Main.lua
-Main.xml

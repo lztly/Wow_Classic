@@ -1,7 +1,0 @@
-## Interface: 11302
-## Title: AbarClassic
-## Author: Boxto
-## Q-CAT-Version: 000200
-
-AbarClassic.lua
-AbarClassic.xml

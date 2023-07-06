@@ -1,8 +1,0 @@
-## Interface: 11302
-## Title: tdPack2
-## Author: Dencer
-## Version: 0.0.9
-## OptionalDeps: Bagnon, Combuctor, tdBag
-## SavedVariables: TDDB_PACK2
-
-Load.xml
