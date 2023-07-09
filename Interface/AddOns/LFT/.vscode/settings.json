@@ -1,0 +1,20 @@
+{
+    "Lua.diagnostics.globals": [
+        "SlashCmdList",
+        "UIDropDownMenu_SetText",
+        "StaticPopup_Hide",
+        "UIDropDownMenu_Initialize",
+        "UIDropDownMenu_SetWidth",
+        "DEFAULT_CHAT_FRAME",
+        "UIErrorsFrame",
+        "UIDropDownMenu_AddButton",
+        "GetCursorPosition",
+        "ChatFrame1",
+        "ChatFrame_RemoveChannel",
+        "GetDifficultyColor",
+        "CloseDropDownMenus",
+        "LIGHTYELLOW_FONT_COLOR_CODE",
+        "ERR_AUCTION_REMOVED",
+        "ERR_AUCTION_BID_PLACED"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "Lua.diagnostics.globals": [
+        "SlashCmdList",
+        "SetItemButtonDesaturated",
+        "SetItemButtonTexture",
+        "SetItemButtonCount",
+        "StaticPopupDialogs",
+        "ColorPickerFrame",
+        "DEFAULT_CHAT_FRAME",
+        "UISpecialFrames",
+        "MoneyFrame_Update",
+        "COPPER_PER_SILVER",
+        "BankFrame",
+        "ShowInspectCursor",
+        "CursorUpdate",
+        "CONFIRM_BUY_BANK_SLOT",
+        "YES",
+        "NO",
+        "GRAY_FONT_COLOR",
+        "NORMAL_FONT_COLOR",
+        "HIGHLIGHT_FONT_COLOR",
+        "SetItemButtonTextureVertexColor",
+        "BANK_BAG",
+        "SILVER_PER_GOLD",
+        "SetTooltipMoney",
+        "BANK_BAG_PURCHASE",
+        "StaticPopup_Show",
+        "REPAIR_COST",
+        "MerchantFrame",
+        "ReloadUI"
+    ]
+}

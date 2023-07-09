@@ -1,0 +1,14 @@
+## Interface: 11200
+## Title: Looking For Turtles - |cffabd473LFT
+## Author: Xerron/Er ,汉化 MrBCat
+## Title-zhCN: 队伍查找器 - |cffabd473LFT
+## Version: 0.0.3.3
+## Notes: LFG Addon for Turtle WoW
+## Notes-zhCN: 一个方便快捷的组队查找器，汉化MrBCat
+## SavedVariables: LFT_FORMED_GROUPS
+## SavedVariablesPerCharacter: LFT_ROLE, LFT_TYPE, LFT_CONFIG
+
+ChatThrottleLib\ChatThrottleLib.lua
+LFT.xml
+evn.lua
+

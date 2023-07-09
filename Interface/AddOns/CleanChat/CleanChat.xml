@@ -1,0 +1,250 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+  <Script file="Localization.lua"/>
+  <Script file="Localization.en.lua"/>
+  <Script file="Localization.de.lua"/>
+  <Script file="Localization.fr.lua"/>
+  <Script file="Localization.kr.lua"/>
+  <Script file="Localization.cn.lua"/>
+  <Script file="HighlightConfig.lua"/>
+  <Script file="CleanChat.lua"/>
+  <Frame name="CleanChatFrame" hidden="false">
+    <Scripts>
+      <OnLoad>
+        CleanChat_OnLoad();
+      </OnLoad>
+      <OnEvent>
+        CleanChat_OnEvent(event);
+      </OnEvent>
+      <OnUpdate>
+        CleanChat_OnUpdate(arg1);
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+
+  <Frame name="CleanChat_PopupFrame" hidden="true" toplevel="true">
+    <Size>
+      <AbsDimension x="505" y="95"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Layers>
+      <Layer level="BACKGROUND">
+        <Texture name="$parentBG">
+          <Color r="0.0" g="0.0" b="0.0" a="0.5"/>
+        </Texture>
+      </Layer>
+      <Layer level="OVERLAY">
+        <FontString name="$parentText" inherits="GameFontNormalLarge">
+          <Size>
+            <AbsDimension x="500" y="100"/>
+          </Size>
+          <Anchors>
+            <Anchor point="CENTER"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+    </Layers>
+    <Scripts>
+      <OnUpdate>
+        CleanChat_PopupOnUpdated(arg1);
+      </OnUpdate>
+    </Scripts>
+  </Frame>
+  
+  <Frame name="CleanChatURLText_Template" enableMouse="true" virtual="true">
+    <Size>
+	  <AbsDimension x="380" y="25"/>
+	</Size>
+    <Layers>
+      <Layer level="OVERLAY">
+        <FontString name="$parentText" inherits="GameFontNormal" justifyH="left">
+		  <Size>
+		    <AbsDimension x="365" y="1"/>
+		  </Size>
+          <Anchors>
+            <Anchor point="TOPLEFT"/>
+          </Anchors>
+        </FontString>
+      </Layer>
+	</Layers>
+    <Scripts>
+	  <OnShow>
+        getglobal(this:GetName() .. "Text"):SetText(CleanChat_GetURL(this:GetID()));
+	  </OnShow>
+	  <OnEnter>
+	    if CleanChat_GetURL(this:GetID()) ~= CLEANCHAT_NO_URL then
+          getglobal(this:GetName() .. "Text"):SetTextColor(1, 1, 1);
+          CleanChatURLStatus:SetText(CLEANCHAT_URL_STATUS1);
+		end
+	  </OnEnter>
+	  <OnLeave>
+        getglobal(this:GetName() .. "Text"):SetTextColor(GameFontNormal:GetTextColor());
+	  </OnLeave>
+	  <OnMouseUp>
+        CleanChat_CopyURL(this:GetID());
+	  </OnMouseUp>
+	</Scripts>
+  </Frame>
+  
+  <Frame name="CleanChatURLFrame" toplevel="true" frameStrata="HIGH" movable="true" enableMouse="true" hidden="true" parent="UIParent">
+    <Size>
+      <AbsDimension x="400" y="230"/>
+    </Size>
+    <Anchors>
+      <Anchor point="CENTER"/>
+    </Anchors>
+    <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+      <BackgroundInsets>
+        <AbsInset left="11" right="12" top="12" bottom="11"/>
+      </BackgroundInsets>
+      <TileSize>
+        <AbsValue val="32"/>
+      </TileSize>
+      <EdgeSize>
+        <AbsValue val="32"/>
+      </EdgeSize>
+    </Backdrop>
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="CleanChatURLHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+          <Size>
+            <AbsDimension x="200" y="64"/>
+          </Size>
+          <Anchors>
+            <Anchor point="TOP">
+              <Offset>
+                <AbsDimension x="0" y="12"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </Texture>
+        <FontString name="CleanChatURLTitle" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="TOP" relativeTo="CleanChatURLHeader">
+              <Offset>
+                <AbsDimension x="0" y="-14"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>
+        <FontString name="CleanChatURLStatus" inherits="GameFontNormal">
+          <Anchors>
+            <Anchor point="TOPLEFT" relativePoint="TOPLEFT" relativeTo="CleanChatURLFrame">
+              <Offset>
+                <AbsDimension x="20" y="-30"/>
+              </Offset>
+            </Anchor>
+          </Anchors>
+        </FontString>		
+      </Layer>
+    </Layers>
+	<Frames>
+	  <Frame name="CleanChat_URL1" inherits="CleanChatURLText_Template" id="1">
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativeTo="CleanChatURLStatus">
+		    <Offset>
+		      <AbsDimension x="0" y="-25"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors> 		
+	  </Frame>
+	  <Frame name="CleanChat_URL2" inherits="CleanChatURLText_Template" id="2">
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CleanChat_URL1">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors> 		
+	  </Frame>
+	  <Frame name="CleanChat_URL3" inherits="CleanChatURLText_Template" id="3">
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CleanChat_URL2">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors> 		
+	  </Frame>
+	  <Frame name="CleanChat_URL4" inherits="CleanChatURLText_Template" id="4">
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CleanChat_URL3">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors> 		
+	  </Frame>
+	  <Frame name="CleanChat_URL5" inherits="CleanChatURLText_Template" id="5">
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CleanChat_URL4">
+		    <Offset>
+		      <AbsDimension x="0" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors> 		
+	  </Frame>
+	  
+	  <EditBox name="CleanChat_URL_EditBox" historyLines="0" multiLine="false" autoFocus="false" inherits="InputBoxTemplate">
+        <Size>
+          <AbsDimension x="355" y="20"/>
+        </Size>
+	    <Anchors>
+	      <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="CleanChat_URL5">
+		    <Offset>
+		      <AbsDimension x="5" y="0"/>
+		    </Offset>
+		  </Anchor>
+		</Anchors>
+		<Scripts>
+		  <OnEditFocusLost>
+            CleanChatURLStatus:SetText(CLEANCHAT_URL_STATUS1);
+		  </OnEditFocusLost>
+		</Scripts>
+	  </EditBox>
+	  
+      <!-- Close button -->
+      <Button name="CleanChat_URL_CloseButton" inherits="OptionsButtonTemplate">
+        <Size>
+          <AbsDimension x="32" y="32"/>
+        </Size>
+        <Anchors>
+          <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="CleanChatURLFrame">
+            <Offset>
+              <AbsDimension x="-35" y="-5"/>
+            </Offset>
+          </Anchor>
+        </Anchors>
+        <NormalTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Up"/>
+        <PushedTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Down"/>
+        <HighlightTexture file="Interface\Buttons\UI-Panel-MinimizeButton-Highlight" alphaMode="ADD"/>
+        <Scripts>
+          <OnClick>
+            CleanChatURLFrame:Hide();
+          </OnClick>
+        </Scripts>
+      </Button>
+	  
+    </Frames>
+	<Scripts>
+	  <OnLoad>
+	    CleanChatURLTitle:SetText(CLEANCHAT_URL_TITLE);
+		CleanChatURLStatus:SetText(CLEANCHAT_URL_STATUS1);
+		CleanChatURLStatus:SetTextColor(0, 1, 0);
+		this:RegisterForDrag("LeftButton");
+        table.insert(UISpecialFrames, "CleanChatURLFrame");
+	  </OnLoad>
+	  <OnShow>
+        CleanChat_URL_EditBox:SetText("");
+	  </OnShow>	 
+      <OnDragStart>
+        this:StartMoving();
+      </OnDragStart>
+      <OnDragStop>
+        this:StopMovingOrSizing();
+      </OnDragStop>
+	</Scripts>
+  </Frame>  
+</Ui>
+

@@ -1,0 +1,4 @@
+## Interface:11200
+## Title: QuickLoot
+## Notes: 游戏的物品拾取窗口会自动的显示在您当前的鼠标下面。
+QuickLoot.xml

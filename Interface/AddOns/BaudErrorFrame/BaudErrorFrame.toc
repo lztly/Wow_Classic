@@ -1,0 +1,9 @@
+## Interface: 11200
+## Title: BaudErrorFrame
+## Notes: Improved error reporting
+## Title-zhCN:插件错误收集
+## Notes-zhCN:用于收集插件或宏出现的错误。|N设置命令：/error
+## Author: Baudzilla, wolftankk, Affli@RU-Howling Fjord, 1.12by狗血编剧男
+## Version: 1.5
+
+BaudErrorFrame.xml

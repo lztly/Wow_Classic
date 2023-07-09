@@ -1,0 +1,5 @@
+{
+    "Lua.diagnostics.globals": [
+        "DEFAULT_CHAT_FRAME"
+    ]
+}

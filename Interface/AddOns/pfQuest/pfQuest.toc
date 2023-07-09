@@ -1,0 +1,14 @@
+## Interface: 11200
+## Title: |cff33ffccpf|cffffffffQuest
+## Author: Shagu
+## Notes: A Questhelper and Database
+## Title-zhCN:pfQuest WOW数据库查询
+## Notes-zhCN:显示任务、物品、NPC、资源点等数据的大型浏览器
+## Version: 6.7.4
+## OptionalDeps: pfUI
+## SavedVariables: pfQuest_questcache
+## SavedVariablesPerCharacter: pfQuest_config, pfBrowser_fav, pfQuest_history, pfQuest_colors, pfQuest_server
+init\data.xml
+init\enUS.xml
+init\zhCN.xml
+init\addon.xml

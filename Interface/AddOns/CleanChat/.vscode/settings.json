@@ -1,0 +1,11 @@
+{
+    "Lua.diagnostics.globals": [
+        "SlashCmdList",
+        "NUM_CHAT_WINDOWS",
+        "ChatFrame1",
+        "ChatFrameMenuButton",
+        "HIGHLIGHT_FONT_COLOR_CODE",
+        "LIGHTYELLOW_FONT_COLOR_CODE",
+        "NORMAL_FONT_COLOR_CODE"
+    ]
+}

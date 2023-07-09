@@ -1,0 +1,19 @@
+## Interface: 11200
+## Title: CleanChat
+## Title-zhCN: CleanChat[聊天增强]
+## Notes: Colorize names, shows level and faction, shortens channel names and more.
+## Notes-zhCN: 着色人名，显示级别和阵营，简写频道名称等等。
+## Notes-deDE: Farbige Namen, Levelanzeige, k\195\188rzt Kanalname und mehr.
+## Notes-frFR: Colorize names, shows level and faction, shortens channel names and more.
+## SavedVariables: CleanChat_IsColorizeNicks CleanChat_IsRandomColor CleanChat_IsHidePrefix CleanChat_HideChannelnames CleanChat_IsClassColor CleanChat_Colors CleanChat_GuiColors CleanChat_UseCursorKeys CleanChat_HideChatButtons CleanChat_ShowLevel CleanChat_ShowFaction CleanChat_CollectData CleanChat_EnableMouseWheel CleanChat_Popup CleanChat_IgnoreEmotes CleanChat_URLs
+## SavedVariablesPerCharacter: CleanChat_NameCache, CleanChat_UsedColors, CleanChat_IsPersistent
+## OptionalDeps: myAddOns
+## Author: Bastian Pflieger (wbb),汉化MrBCat
+## Version: v19t
+## X-Email: wbb1977@gmail.com
+## X-Date: 2018-12-27
+## X-Category: MYADDONS_CATEGORY_CHAT
+## X-Help: CLEANCHAT_HELP
+## X-OptionsFrame: CleanChatOptionsFrame
+CleanChat.xml
+CleanChatOptions.xml
